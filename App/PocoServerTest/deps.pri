@@ -1,6 +1,6 @@
 
-INCLUDEPATH += /usr/local/include/Poco
+INCLUDEPATH += /usr/include/Poco
 
-LIBS += -L"/usr/local/lib/" -lPocoNet \
-        -L"/usr/local/lib/" -lPocoFoundation \
-        -L"/usr/local/lib/" -lPocoUtil
+LIBS += -L"/usr/lib/" -lPocoNet \
+        -L"/usr/lib/" -lPocoFoundation \
+        -L"/usr/lib/" -lPocoUtil
