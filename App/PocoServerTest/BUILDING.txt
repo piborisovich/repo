@@ -1,0 +1,43 @@
+*******************************************************************************
+**     Building PocoServerTest
+*******************************************************************************
+
+
+================================
+Build Requirements (Unix)
+================================
+
+-- Qt (https://www.qt.io/) v5.9.5 or later
+
+-- gcc
+
+-- git
+ 
+-- POCO C++ Libraries v1.8 (https://pocoproject.org) or later (type "apt-get install libpoco-dev" in the terminal to install)
+
+=======================
+Building PocoServerTest
+=======================
+
+Building the PocoServerTest on Unix Systems
+------------------------------------------------
+
+The following procedure will build the PocoServerTest on Linux and Unix
+systems.
+
+  cd ~
+  mkdir {build_directory}
+  cd {build_directory}
+  git clone https://github.com/piborisovich/repo.git
+  cd repo/App/PocoServerTest/
+  qmake
+  make
+  
+===================
+Run PocoServerTest
+===================
+
+To start the PocoServerTest you need the following sequence of commands in the terminal
+
+cd ~/{build_directory}/BIN
+./PocoServerTest
