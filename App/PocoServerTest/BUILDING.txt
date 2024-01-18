@@ -9,7 +9,7 @@ Build Requirements (Unix)
 
 -- Qt (https://www.qt.io/) v5.9.5 or later
 
--- gcc
+-- build-essential package
 
 -- git
  
