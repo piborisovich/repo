@@ -7,7 +7,7 @@
 Build Requirements (Unix)
 ================================
 
--- Qt (https://www.qt.io/) v5.9.5 or later
+-- Qt (https://www.qt.io/) v5.9.5 or later (type "apt-get install qtbase5-dev" in the terminal to install)
 
 -- build-essential package
 
