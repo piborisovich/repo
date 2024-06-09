@@ -3,10 +3,22 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
+#include <cmath>
+
 const int SimpleSizeGraphicsItem::ARROW_HEIGHT   = 20;
 const double SimpleSizeGraphicsItem::ARROW_ANGLE = 20;
 const int SimpleSizeGraphicsItem::TEXT_SPACING   = 5;
 const int SimpleSizeGraphicsItem::LINE_SPACING   = 5;
+
+constexpr inline double radiansToDegrees(double radians)
+{
+    return radians * (180 / M_PI);
+}
+
+constexpr inline double degreesToRadians(double degrees)
+{
+    return degrees * (M_PI / 180);
+}
 
 SimpleSizeGraphicsItem::SimpleSizeGraphicsItem(QGraphicsItem *parent) : QGraphicsItem(parent),
     m_height(0)
@@ -87,7 +99,7 @@ void SimpleSizeGraphicsItem::setP2(QPointF newP2)
 
 void SimpleSizeGraphicsItem::initMarker(QPolygonF &poly)
 {
-    double dx = tan(qDegreesToRadians(ARROW_ANGLE / 2.0)) * ARROW_HEIGHT;
+    double dx = std::tan(degreesToRadians(ARROW_ANGLE / 2.0)) * ARROW_HEIGHT;
     poly.clear();
     poly << QPointF(0, 0);
     poly << QPointF(dx, ARROW_HEIGHT);
@@ -99,9 +111,9 @@ void SimpleSizeGraphicsItem::recalc()
 {
     QPolygonF poly = QPolygonF() << m_baseLine.p1() << m_baseLine.p2();
     double angle = rotationAngle();
-    double angle_rad = qDegreesToRadians(90 + angle);
-    double cos_a = cos(angle_rad);
-    double sin_a = sin(angle_rad);
+    double angle_rad = degreesToRadians(90 + angle);
+    double cos_a = std::cos(angle_rad);
+    double sin_a = std::sin(angle_rad);
 
     QFontMetrics fm(font());
 
@@ -155,7 +167,7 @@ void SimpleSizeGraphicsItem::setHeight(int newHeight)
 inline double SimpleSizeGraphicsItem::rotationAngle()
 {
     double div = m_baseLine.dy() / m_baseLine.dx();
-    return ( div > 0 ? qRadiansToDegrees(atan(abs(div))) : -qRadiansToDegrees(atan(abs(div))) ) ;
+    return ( div > 0 ? radiansToDegrees(std::atan(std::abs(div))) : -radiansToDegrees(std::atan(abs(div))) ) ;
 }
 
 QString SimpleSizeGraphicsItem::text() const
