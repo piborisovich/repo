@@ -1,15 +1,10 @@
-#include "portlistener.h"
+#include "portlistener.hpp"
 
 PortListener::PortListener(QObject *parent) :
     QThread(parent)
 {
-    m_port = new QSerialPort();
+    m_port = new SerialPort();
     sch_frame = 0;
-    APIresponse = 0;
-    error_XB = 0;
-    sch_inf = 0;
-    Source_addressL = 0;
-    Source_addressH = 0;
 }
 
 void PortListener::run()
@@ -50,196 +45,7 @@ void PortListener::run()
     }
 }
 
-//Поиск номера порта XBee
- int PortListener::Find_portXB()
- {
-     char buf[64];
-     int cnt;
-     QString s;
-     for (int p = 1; p < MAX_SCAN_DEVICES; p++){
-         if(!m_port->Openu(p, 9600)){
-             continue;
-         }
-
-         //Вход в командный режим
-        msleep(1000);
-
-         byte s_en[] = "+++";
-         if ( !m_port->Write((const char*)s_en,3)) { m_port->Close(); continue; }
-
-         msleep(1000);
-
-         m_port->Read(buf, sizeof(buf), &cnt);
-         if (cnt == 3){
-             s = QString::fromAscii(buf, cnt);
-
-             if (s != "OK\r"){
-                 m_port->Close();
-                 s.clear();
-                 continue;
-             }
-
-             s.clear();
-
-             if (Init_XB()){
-                 return p;
-             }
-         }
-         m_port->Close();
-        //return p;
-     }
-     return 0;
- }
-
- bool PortListener::Init_XB ()
- {
-     byte res;
-
-     //Запрос серийного номера (младшая часть)
-     com_AT[0]='S';
-     com_AT[1]='L';
-     if (!(res = Send_ATcommand(_read, 8, Receive_frame))){
-         return false;
-     }
-
-     for (byte i = 0; i < res - 1; i++){
-         Serial_numberL[i] = Receive_frame[i];
-     }
-
-     //Запрос серийного номера (старшая часть)
-     com_AT[0]='S';
-     com_AT[1]='H';
-     if (!(res = Send_ATcommand (_read, 8, Receive_frame))){
-         return false;
-     }
-
-     byte n = 8 - (res - 1);//i;
-     for (byte i = 0; i < res-1; i++){
-         Serial_numberH[n + i] = Receive_frame[i];
-     }
-
-     for (byte i = 0; i < n; i++){
-         Serial_numberH[i] = '0';
-     }
-
-     //PAN ID
-     com_AT[0]='I';
-     com_AT[1]='D';//0x0457 = 1111 dec
-     if (!(res = Send_ATcommand(_read, 16, Receive_frame))){
-         return false;
-     }
-
-     if (memcmp(Receive_frame, ID, res - 1) != 0) {
-
-         //Start Initialization XB
-
-         //Write PAN ID
-         memcpy(Transmit_frame, ID, 16);
-         if (!Send_ATcommand(_write_param, 16, Transmit_frame)){
-            return false;
-         }
-
-         //Node Identifier max=20
-         com_AT[0]='N';
-         com_AT[1]='I';
-         memcpy(Transmit_frame, NI, sizeof(NI));
-
-         if (!Send_ATcommand(_write_param, sizeof(NI), Transmit_frame)){
-             return false;
-         }
-
-         //Coordinator Enable
-         com_AT[0]='C';
-         com_AT[1]='E';
-         Transmit_frame[0] = '1';
-         if (!Send_ATcommand (_write_param, 1, Transmit_frame)){
-             return false;
-         }
-
-         //API Enable
-         com_AT[0]='A';
-         com_AT[1]='P';
-         Transmit_frame[0] = '1';
-         if (!Send_ATcommand (_write_param, 1, Transmit_frame)){
-             return false;
-         }
-
-         com_AT[0]='W';
-         com_AT[1]='R';
-         if (!Send_ATcommand(_write, 0, Transmit_frame)){
-             return false;
-         }
-     }
-
-      /*  com_AT[0]='A';
-         com_AT[1]='C';
-         if (!Send_ATcommand(_write, 0, Transmit_frame)){
-             return false;
-         }
-     }*/
-
-     //Exit_ATcomm_mode();
-     com_AT[0] = 'C';
-     com_AT[1] = 'N';
-     if (!Send_ATcommand(_write, 0, Transmit_frame)){
-         return false;
-     }
-
-     return true;
- }
-
- byte PortListener::Send_ATcommand(byte param, byte length, byte *adr)
- {
-     byte st1[10];
-     st1[0] = 'A';
-     st1[1] = 'T';
-     st1[2] = com_AT[0];
-     st1[3] = com_AT[1];
-     st1[4]= ' ';
-
-     st1[5]=0x0d;
-
-     if (!m_port->Write((const char*)st1, 5)){
-         return 0;//false;
-     }
-
-     if (param == _write_param){
-         // with param
-         if (!m_port->Write((const char*)adr,length)){
-             //	ERR_TYPE=7;
-             return 0;//false;
-         }
-     }
-
-     if (!m_port->Write((const char*)&st1[5],1)){
-         //	ERR_TYPE=7;//
-         return 0;//false;
-     }
-
-     msleep(200);
-
-     int cnt = 0;
-
-     if (!m_port->Read((char*)adr,128,&cnt)){
-         return 0;//false;
-     }
-
-     if (cnt == 0 || cnt == -1){
-         //	ERR_TYPE=7;//
-         return 0;//false;
-     }
-
-     if(*adr == 'E' && *(adr+1) == 'R'){
-         return 0;//false;
-     }
-
-     if(param == _read){
-         return cnt;
-     }
-
-     return 1;//true;
- }
-
+/*
 void PortListener::receiveData()
 {
     int cnt;
@@ -299,52 +105,39 @@ void PortListener::receiveData()
 
 
  }
+*/
+ /*
 
- byte* PortListener::Receive_APIframe (byte *address, byte cnt)
- {
-     //flags.yes_answer =0;
-     byte *ptr_in = address;
-     APIresponse = *ptr_in++;
-     byte flag_err =0;
+bool PortWriter::sendAnswer(byte frameID, QByteArray outputAddress, int length, QList <byte> params)
+{
+    byte* outputFrame = new byte[length];
+    short int len;
+    len = length - 4;
+    outputFrame[0] = 0x7E;
+    outputFrame[1] = (len >> 8) & 0xFF;
+    outputFrame[2] = (byte) len;
+    outputFrame[3] = API_TX_Request;
+    outputFrame[4] = 0x51;
 
-     switch (APIresponse)
-     {
-     case API_Com_Response:
-         if (*ptr_in++ != 'C') {flag_err =1; break;}
-         if (*ptr_in++ != com_AT[0])  {flag_err =1; break;}
-         if (*ptr_in++ != com_AT[1])  {flag_err =1; break;}
-         if (*ptr_in++ != 0)  {flag_err =1; break;}	// != OK
-         if (cnt > 5)
-         {
-             error_XB =0;
-             sch_inf = cnt -5;
-             return ptr_in;	//is command data
-         }
-         break;
-     case API_Modem_Status:
-         break;
-     case API_TX_Status:
-         if (*ptr_in++ != 'T')  {flag_err =1; break;}
-         ptr_in +=3;
-         if (*ptr_in++ != 0)  {flag_err =1; break;}	// != OK
-         break;
-     case API_RX_Packet:
-         sch_inf = cnt - 12;	//-
-         Source_addressH = *(word32*)ptr_in;
-         ptr_in +=4;
-         Source_addressL = *(word32*)ptr_in;
-         ptr_in += 4+3;
-         break;
+    for (int i = 0; i < outputAddress.length(); i++){
+        outputFrame[i+5] = outputAddress.at(i);
+    }
+    outputFrame[13] = 0xFF;
+    outputFrame[14] = 0xFE;
+    outputFrame[15] = 0x00;
+    outputFrame[16] = 0x00;
+    outputFrame[length - params.count() - 2] = frameID;
+    //outputFrame[length - 2] = deviceID;
+    for (int i = 0; i < params.count(); i++) {
+        outputFrame[length - i - 2] = params.at(i);
+    }
+    outputFrame[length - 1] = CheckSumm_Calc(outputFrame, length);
 
-     default: return 0;
-     }
-     if (flag_err)
-     {
-         error_XB = err_transaction;
-         return (byte*)-1;
-     }
-     error_XB =0;
-     if (APIresponse == API_RX_Packet)
-         return ptr_in;
-     return 0;
- }
+    if (!m_port->Write((const char*) outputFrame, length)){
+        return false;
+    }
+
+    return true;
+}
+
+*/

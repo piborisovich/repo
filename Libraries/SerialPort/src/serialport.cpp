@@ -1,11 +1,10 @@
-// QSerialPort.cpp: implementation of the QSerialPort class.
-//
-//////////////////////////////////////////////////////////////////////
+#include "serialport.hpp"
 
-#include "QSerialPort.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 #if defined (Q_OS_WIN32)
-//#include "windows.h"
+#include "windows.h"
 #include "tchar.h"
 
 #elif defined (Q_OS_LINUX)
@@ -33,36 +32,33 @@ void m_setrts(int fd);
 
 #endif
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
-QSerialPort::QSerialPort()
+SerialPort::SerialPort()
 {
 //#ifdef _WINDOWS
 #if defined (Q_OS_WIN32)
-        handle = INVALID_HANDLE_VALUE;
+    m_handle = INVALID_HANDLE_VALUE;
 
 #elif defined (Q_OS_LINUX)
         handle = -1;
 #endif
 }
 
-QSerialPort::~QSerialPort()
+SerialPort::~SerialPort()
 {
 
 }
 
-bool QSerialPort::Open(int portnum,int baudrate)
+bool SerialPort::open(int portnum,int baudrate)
 {
-        if (IsOpened()) Close();
+    if (isOpened()) close();
 
 // Windows
 #if defined (Q_OS_WIN32)
         char buf [100];
         sprintf(buf,_T("\\\\.\\COM%d"),portnum);
 
-        handle =  CreateFileA((char*)buf,
+        m_handle =  CreateFileA((char*)buf,
                                         GENERIC_READ | GENERIC_WRITE,
                                         0,	// exclusive access
                                         0,	// no security attrs
@@ -70,7 +66,7 @@ bool QSerialPort::Open(int portnum,int baudrate)
                                         0,
                                         0);
 
-        if (handle == INVALID_HANDLE_VALUE)
+        if (m_handle == INVALID_HANDLE_VALUE)
         {
                 return false;
         }
@@ -88,17 +84,17 @@ bool QSerialPort::Open(int portnum,int baudrate)
 #endif
 
         //  COM-
-        if (!InitCOMPort(baudrate))
+        if (!initComPort(baudrate))
         {
                 return false;
         }
         return true;
 }
-bool QSerialPort::Openu(int portnum,int baudrate)
+bool SerialPort::openUsb(int portnum,int baudrate)
 {
     //Проверяем открыт ли порт. Если открыт закрываем.
-    if (IsOpened()){
-        Close();
+    if (isOpened()){
+        close();
     }
 
 // Windows
@@ -107,7 +103,7 @@ bool QSerialPort::Openu(int portnum,int baudrate)
     char buf [100];
     sprintf(buf,_T("\\\\.\\COM%d"),portnum);
 
-    handle =  CreateFileA((char*)buf,
+    m_handle =  CreateFileA((char*)buf,
                           GENERIC_READ | GENERIC_WRITE,
                           0,	// exclusive access
                           NULL,	// no security attrs
@@ -115,7 +111,7 @@ bool QSerialPort::Openu(int portnum,int baudrate)
                           0,
                           NULL);
 
-    if (handle == INVALID_HANDLE_VALUE){
+    if (m_handle == INVALID_HANDLE_VALUE){
         return false;
     }
 
@@ -135,18 +131,18 @@ bool QSerialPort::Openu(int portnum,int baudrate)
 #endif
 
         //  COM-
-    if (!InitCOMPort(baudrate))
+    if (!initComPort(baudrate))
         return false;
 
     return true;
 }
-bool QSerialPort::Close()
+bool SerialPort::close()
 {
 #if defined (Q_OS_WIN32)
 
-        if (handle == INVALID_HANDLE_VALUE) return false;
-        CloseHandle(handle);
-        handle = INVALID_HANDLE_VALUE;
+    if (m_handle == INVALID_HANDLE_VALUE) return false;
+    CloseHandle(m_handle);
+    m_handle = INVALID_HANDLE_VALUE;
         return true;
 
 #elif defined (Q_OS_LINUX)
@@ -159,24 +155,24 @@ bool QSerialPort::Close()
 #endif
 }
 
-bool QSerialPort::IsOpened()
+bool SerialPort::isOpened()
 {
 #if defined (Q_OS_WIN32)
-        return handle != INVALID_HANDLE_VALUE;
+    return m_handle != INVALID_HANDLE_VALUE;
 
 #elif defined (Q_OS_LINUX)
         return handle >= 0;
 #endif
 }
 
-bool QSerialPort::Write(const char* buf,int cnt)
+bool SerialPort::write(const char* buf,int cnt)
 {
-        if (!IsOpened()) return false;
+    if (!isOpened()) return false;
 
 #if defined (Q_OS_WIN32)
         DWORD wrtn;
 
-        if (WriteFile(handle, buf, cnt, &wrtn, 0) && ((DWORD)cnt == wrtn)) return true;
+    if (WriteFile(m_handle, buf, cnt, &wrtn, 0) && ((DWORD)cnt == wrtn)) return true;
 
 #elif defined (Q_OS_LINUX)
         if (write(handle, buf, cnt) == cnt)
@@ -189,19 +185,19 @@ bool QSerialPort::Write(const char* buf,int cnt)
         return false;
 }
 
-bool QSerialPort::Writeln(const char* buf,int cnt)
+bool SerialPort::writeln(const char* buf,int cnt)
 {
         const char rn[] = "\r\n";
-        return Write(buf,cnt) && Write(rn,2);
+    return write(buf,cnt) && write(rn,2);
 }
 
-bool QSerialPort::Read(char* buf, int bufsz, int* cnt)
+bool SerialPort::read(char* buf, int bufsz, int* cnt)
 {
-        if (!IsOpened()) return false;
+    if (!isOpened()) return false;
 
 #if defined (Q_OS_WIN32)
 
-        if (ReadFile(handle, buf, bufsz, (DWORD*)cnt, 0))
+    if (ReadFile(m_handle, buf, bufsz, (DWORD*)cnt, 0))
             return true;
 
         return false;
@@ -217,7 +213,7 @@ bool QSerialPort::Read(char* buf, int bufsz, int* cnt)
 }
 
 
-bool QSerialPort::InitCOMPort(int baudrate)
+bool SerialPort::initComPort(int baudrate)
 {
 
 // Windows Implementation
@@ -227,7 +223,7 @@ bool QSerialPort::InitCOMPort(int baudrate)
     COMMTIMEOUTS TimeOuts; // Структура COMMTIMEOUTS
 
     Dcb.DCBlength = sizeof(DCB); //Длина структуры DCB
-    GetCommState(handle, &Dcb);
+    GetCommState(m_handle, &Dcb);
 
     if (baudrate == 0){
         baudrate = CBR_9600;
@@ -256,11 +252,11 @@ bool QSerialPort::InitCOMPort(int baudrate)
     Dcb.XonChar =  FALSE;	                // Tx and Rx XON character
     Dcb.XoffChar = FALSE;	                // Tx and Rx XOFF character
 
-    if(!(SetCommState(handle, &Dcb))){
+    if(!(SetCommState(m_handle, &Dcb))){
         return false;
     }
 
-    if(!SetupComm(handle,
+    if(!SetupComm(m_handle,
                   1024,	//size of input buffer
                   1024	//size of output buffer
                   )){
@@ -269,7 +265,7 @@ bool QSerialPort::InitCOMPort(int baudrate)
 
     //discard of characters from input and output buffers
     //and reset all commications operations
-    if(!PurgeComm(handle,
+    if(!PurgeComm(m_handle,
                   PURGE_TXABORT | PURGE_RXABORT |
                   PURGE_TXCLEAR | PURGE_RXCLEAR )){
         return false;
@@ -282,11 +278,11 @@ bool QSerialPort::InitCOMPort(int baudrate)
     TimeOuts.WriteTotalTimeoutMultiplier = 0;
     TimeOuts.WriteTotalTimeoutConstant = 150;
 
-    if (!SetCommTimeouts(handle, &TimeOuts)){
+    if (!SetCommTimeouts(m_handle, &TimeOuts)){
         return false;
     }
 
-    if (!SetCommMask(handle, EV_RXCHAR | EV_TXEMPTY )){
+    if (!SetCommMask(m_handle, EV_RXCHAR | EV_TXEMPTY )){
         return false;
     }
 
