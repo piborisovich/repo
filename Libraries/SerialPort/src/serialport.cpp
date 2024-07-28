@@ -32,65 +32,65 @@ void m_setrts(int fd);
 
 #endif
 
+const int SerialPort::TX_BUF_SIZE = 1024;
+const int SerialPort::RX_BUF_SIZE = 1024;
 
-SerialPort::SerialPort()
+SerialPort::SerialPort(const PortConfig &portConfig) :
+    m_portConfig(portConfig)
 {
 //#ifdef _WINDOWS
 #if defined (Q_OS_WIN32)
     m_handle = INVALID_HANDLE_VALUE;
 
 #elif defined (Q_OS_LINUX)
-        handle = -1;
+    m_handle = -1;
 #endif
 }
 
 SerialPort::~SerialPort()
 {
-
 }
 
-bool SerialPort::open(int portnum,int baudrate)
+bool SerialPort::open()
 {
     if (isOpened()) close();
 
 // Windows
 #if defined (Q_OS_WIN32)
-        char buf [100];
-        sprintf(buf,_T("\\\\.\\COM%d"),portnum);
+    char buf [100];
+    sprintf(buf, "\\\\.\\COM%d", m_portConfig.portnum);
 
-        m_handle =  CreateFileA((char*)buf,
-                                        GENERIC_READ | GENERIC_WRITE,
-                                        0,	// exclusive access
-                                        0,	// no security attrs
-                                        OPEN_EXISTING,
-                                        0,
-                                        0);
+    m_handle =  CreateFileA(reinterpret_cast<char*>(buf),
+                           GENERIC_READ | GENERIC_WRITE,
+                           0,	// exclusive access
+                           0,	// no security attrs
+                           OPEN_EXISTING,
+                           0,
+                           nullptr);
 
-        if (m_handle == INVALID_HANDLE_VALUE)
-        {
-                return false;
-        }
+    if (m_handle == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
 #elif defined (Q_OS_LINUX)
 
-//	Linux Version
+    //	Linux Version
 
-        char buf [100];
-        sprintf(buf, "/dev/ttyS%d", portnum-1);
+    char buf [100];
+    sprintf(buf, "/dev/ttyS%d", portnum - 1);
 
-        // Open Device to be non blocking
-        // O_NDELAY causes non blocking read
-        handle = open(buf, O_RDWR|O_NOCTTY|O_NDELAY);
-        if (handle < 0) return false;
+    // Open Device to be non blocking
+    // O_NDELAY causes non blocking read
+    m_handle = open(buf, O_RDWR|O_NOCTTY|O_NDELAY);
+    if (handle < 0) return false;
 #endif
 
-        //  COM-
-        if (!initComPort(baudrate))
-        {
-                return false;
-        }
-        return true;
+    if ( !initComPort() ){
+        return false;
+    }
+    return true;
 }
-bool SerialPort::openUsb(int portnum,int baudrate)
+bool SerialPort::openUsb()
 {
     //Проверяем открыт ли порт. Если открыт закрываем.
     if (isOpened()){
@@ -101,15 +101,15 @@ bool SerialPort::openUsb(int portnum,int baudrate)
 #if defined (Q_OS_WIN32)
 
     char buf [100];
-    sprintf(buf,_T("\\\\.\\COM%d"),portnum);
+    sprintf(buf, "\\\\.\\COM%d", m_portConfig.portnum);
 
-    m_handle =  CreateFileA((char*)buf,
-                          GENERIC_READ | GENERIC_WRITE,
-                          0,	// exclusive access
-                          NULL,	// no security attrs
-                          OPEN_EXISTING,
-                          0,
-                          NULL);
+    m_handle =  CreateFileA(reinterpret_cast<char*>(buf),
+                           GENERIC_READ | GENERIC_WRITE,
+                           0,	// exclusive access
+                           nullptr,	// no security attrs
+                           OPEN_EXISTING,
+                           0,
+                           nullptr);
 
     if (m_handle == INVALID_HANDLE_VALUE){
         return false;
@@ -117,21 +117,20 @@ bool SerialPort::openUsb(int portnum,int baudrate)
 
 #elif defined (Q_OS_LINUX)
 
-//	Linux Version
+    //	Linux Version
 
     char buf [100];
     sprintf(buf, "/dev/ttyUSB%d", portnum-1);
     //sprintf(buf, "/dev/ttyS%d", portnum-1);
 
-        // Open Device to be non blocking
-        // O_NDELAY causes non blocking read
-    handle = open(buf, O_RDWR|O_NOCTTY|O_NDELAY);
+    // Open Device to be non blocking
+    // O_NDELAY causes non blocking read
+    m_handle = open(buf, O_RDWR|O_NOCTTY|O_NDELAY);
     if (handle < 0)
         return false;
 #endif
 
-        //  COM-
-    if (!initComPort(baudrate))
+    if ( !initComPort() )
         return false;
 
     return true;
@@ -143,14 +142,14 @@ bool SerialPort::close()
     if (m_handle == INVALID_HANDLE_VALUE) return false;
     CloseHandle(m_handle);
     m_handle = INVALID_HANDLE_VALUE;
-        return true;
+    return true;
 
 #elif defined (Q_OS_LINUX)
 
-        if (handle < 0) return false;
-        close(handle);
-        handle = -1;
-        return true;
+    if (m_handle < 0) return false;
+    close(handle);
+    handle = -1;
+    return true;
 
 #endif
 }
@@ -161,34 +160,34 @@ bool SerialPort::isOpened()
     return m_handle != INVALID_HANDLE_VALUE;
 
 #elif defined (Q_OS_LINUX)
-        return handle >= 0;
+    return m_handle >= 0;
 #endif
 }
 
 bool SerialPort::write(const char* buf,int cnt)
 {
-    if (!isOpened()) return false;
+    if ( !isOpened() ) return false;
 
 #if defined (Q_OS_WIN32)
-        DWORD wrtn;
+    DWORD wrtn;
 
-    if (WriteFile(m_handle, buf, cnt, &wrtn, 0) && ((DWORD)cnt == wrtn)) return true;
+    if (WriteFile(m_handle, buf, cnt, &wrtn, nullptr) && (static_cast<DWORD>(cnt) == wrtn)) return true;
 
 #elif defined (Q_OS_LINUX)
-        if (write(handle, buf, cnt) == cnt)
-        {
+    if (write(m_handle, buf, cnt) == cnt)
+    {
         //	qWarning(tr("wr cnt = %1").arg(cnt));//		qDebug(QString::number(cnt));
-                return true;
+        return true;
 
-        }
+    }
 #endif
-        return false;
+    return false;
 }
 
 bool SerialPort::writeln(const char* buf,int cnt)
 {
-        const char rn[] = "\r\n";
-    return write(buf,cnt) && write(rn,2);
+    const char rn[] = "\r\n";
+    return write(buf, cnt) && write(rn, 2);
 }
 
 bool SerialPort::read(char* buf, int bufsz, int* cnt)
@@ -197,23 +196,33 @@ bool SerialPort::read(char* buf, int bufsz, int* cnt)
 
 #if defined (Q_OS_WIN32)
 
-    if (ReadFile(m_handle, buf, bufsz, (DWORD*)cnt, 0))
-            return true;
+    if (ReadFile(m_handle, buf, bufsz, reinterpret_cast<DWORD*>(cnt), nullptr))
+        return true;
 
-        return false;
+    return false;
 
 #elif defined (Q_OS_LINUX)
-        *cnt = read(handle,buf,bufsz);
+    *cnt = read(handle,buf,bufsz);
 
-                //qWarning(tr("read cnt = %1").arg(*cnt));
-        return true;
+    //qWarning(tr("read cnt = %1").arg(*cnt));
+    return true;
 //	qWarning(tr("read cnt = %1").arg(*cnt));
 
 #endif
 }
 
+PortConfig SerialPort::portConfig() const
+{
+    return m_portConfig;
+}
 
-bool SerialPort::initComPort(int baudrate)
+void SerialPort::setPortConfig(const PortConfig &newPortConfig)
+{
+    m_portConfig = newPortConfig;
+}
+
+
+bool SerialPort::initComPort()
 {
 
 // Windows Implementation
@@ -225,16 +234,16 @@ bool SerialPort::initComPort(int baudrate)
     Dcb.DCBlength = sizeof(DCB); //Длина структуры DCB
     GetCommState(m_handle, &Dcb);
 
-    if (baudrate == 0){
-        baudrate = CBR_9600;
+    if (m_portConfig.baudrate == 0){
+        m_portConfig.baudrate = PortConfig::BR_9600;
     }
 
-    Dcb.BaudRate = baudrate;                //Скорость передачи данных
+    Dcb.BaudRate = m_portConfig.baudrate;   //Скорость передачи данных
     Dcb.ByteSize = 8;                       //Число информационных бит
     Dcb.Parity =   NOPARITY;                //Контроль четности(NOPARITY - Бит четности отсутствует)   //EVENPARITY; //NOPARITY
     Dcb.fBinary =  TRUE;	                //binary mode must be true (Двоичный режим обмена. Всегда TRUE)
     Dcb.fParity =  FALSE;	                //enable parity checking (Включить контроль четности)
-    Dcb.StopBits = ONESTOPBIT;              //Число стоповых бит (ONESTOPBIT - один стоповый бит)
+    Dcb.StopBits = m_portConfig.stopBits;//ONESTOPBIT;  //Число стоповых бит (ONESTOPBIT - один стоповый бит)
     Dcb.fOutxCtsFlow = FALSE;	            //CTS output flow control (Режим слежения за сигналом CTS)
     Dcb.fOutxDsrFlow = FALSE;	            //DSR output flow control (Режим слежения за сигналом DSR)
     Dcb.fDtrControl =  DTR_CONTROL_ENABLE;	//DTR flow control type (Использование линии DTR. DTR_CONTROL_ENABLE - Разрешить)
@@ -245,7 +254,7 @@ bool SerialPort::initComPort(int baudrate)
     Dcb.fErrorChar = FALSE;	                //enable error replacement
     Dcb.fNull = FALSE;	                    //enable null stripping
     Dcb.fRtsControl = RTS_CONTROL_ENABLE;	//RTS flow control (Режим управления потоком для сигнала RTS.
-                                                //RTS_CONTROL_ENABLE - разрешить использование линии RTS)
+        //RTS_CONTROL_ENABLE - разрешить использование линии RTS)
     Dcb.fAbortOnError = FALSE;	            // abort reads/writes on error
     Dcb.XonLim =   FALSE;	                // transmit XON threshold
     Dcb.XoffLim =  FALSE;	                // transmit XOFF threshold
@@ -257,9 +266,9 @@ bool SerialPort::initComPort(int baudrate)
     }
 
     if(!SetupComm(m_handle,
-                  1024,	//size of input buffer
-                  1024	//size of output buffer
-                  )){
+                   RX_BUF_SIZE,	//size of input buffer
+                   TX_BUF_SIZE	//size of output buffer
+                   )) {
         return false;
     }
 
@@ -297,14 +306,12 @@ bool SerialPort::initComPort(int baudrate)
     char par = 'N';
     char hasRTS = 'Y';  // Hardware Work Flow
     char hasXON = 0;    // Software Work Flow
-    m_setparms(handle,buf,&par,&bts,&stopbts,hasRTS,hasXON);
+    m_setparms(m_handle, buf, &par, &bts, &stopbts, hasRTS, hasXON);
 
     return true;
 #endif
 }
 
-
-////////////////////////////////////////////////////////////////////
 //   minicom
 #if defined (Q_OS_LINUX)
 
@@ -350,65 +357,65 @@ void m_setparms(int fd, char *baudr, char *par, char *bits, char *stopb,
     case 576:	spd = B57600;	break;
     case 1152:	spd = B115200;	break;
     case 2304:	spd = B230400;	break;
-  }
+    }
 
-  qWarning("Setting baudrates");
-  if (spd != -1){
-      cfsetospeed(&tty, (speed_t)spd);
-      cfsetispeed(&tty, (speed_t)spd);
-  }
+    qWarning("Setting baudrates");
+    if (spd != -1){
+        cfsetospeed(&tty, (speed_t)spd);
+        cfsetispeed(&tty, (speed_t)spd);
+    }
 
-  qWarning("Setting bits");
-  switch (bit) {
-  case '5':
-      tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS5;
-      break;
-  case '6':
-      tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS6;
-      break;
-  case '7':
-      tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS7;
-      break;
-  case '8':
-  default:
-      tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
-      break;
-  }
-  /* Set into raw, no echo mode */
-  tty.c_iflag = IGNPAR; //IGNBRK;
-  qWarning("Chosing raw input mode");
-  tty.c_lflag &= ~(ICANON|ECHO|ECHOE|ISIG); //0;
-  tty.c_oflag = 0;
-  tty.c_cflag |= CLOCAL | CREAD;
+    qWarning("Setting bits");
+    switch (bit) {
+    case '5':
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS5;
+        break;
+    case '6':
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS6;
+        break;
+    case '7':
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS7;
+        break;
+    case '8':
+    default:
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
+        break;
+    }
+    /* Set into raw, no echo mode */
+    tty.c_iflag = IGNPAR; //IGNBRK;
+    qWarning("Chosing raw input mode");
+    tty.c_lflag &= ~(ICANON|ECHO|ECHOE|ISIG); //0;
+    tty.c_oflag = 0;
+    tty.c_cflag |= CLOCAL | CREAD;
 #ifdef _DCDFLOW
-  tty.c_cflag &= ~CRTSCTS;
+    tty.c_cflag &= ~CRTSCTS;
 #endif
-  tty.c_cc[VMIN] = 1;
-  tty.c_cc[VTIME] = 0;
+    tty.c_cc[VMIN] = 1;
+    tty.c_cc[VTIME] = 0;
 
-  if (swf){
-      tty.c_iflag |= IXON | IXOFF;
-  } else {
-    tty.c_iflag &= ~(IXON|IXOFF|IXANY);
-  }
-  tty.c_cflag &= ~(PARENB | PARODD);
-  if (par[0] == 'E')
-    tty.c_cflag |= PARENB;
-  else if (par[0] == 'O')
-    tty.c_cflag |= (PARENB | PARODD);
+    if (swf){
+        tty.c_iflag |= IXON | IXOFF;
+    } else {
+        tty.c_iflag &= ~(IXON|IXOFF|IXANY);
+    }
+    tty.c_cflag &= ~(PARENB | PARODD);
+    if (par[0] == 'E')
+        tty.c_cflag |= PARENB;
+    else if (par[0] == 'O')
+        tty.c_cflag |= (PARENB | PARODD);
 
-  if (stopb[0] == '2')
-    tty.c_cflag |= CSTOPB;
-  else
-    tty.c_cflag &= ~CSTOPB;
+    if (stopb[0] == '2')
+        tty.c_cflag |= CSTOPB;
+    else
+        tty.c_cflag &= ~CSTOPB;
 
-  tcsetattr(fd, TCSANOW, &tty);
+    tcsetattr(fd, TCSANOW, &tty);
 
-  m_setrts(fd);
+    m_setrts(fd);
 
 
 #ifndef _DCDFLOW
-   m_sethwf(fd, hwf);
+    m_sethwf(fd, hwf);
 #endif
 }
 
@@ -422,32 +429,32 @@ int get_device_status(int fd)
 void m_sethwf(int fd, int on)
 {
 #ifdef _DGUX_SOURCE
-  struct termiox x;
+    struct termiox x;
 #endif
 #ifdef POSIX_TERMIOS
-  struct termios tty;
+    struct termios tty;
 #endif
 
 #ifdef POSIX_TERMIOS
-  tcgetattr(fd, &tty);
-  if (on)
-    tty.c_cflag |= CRTSCTS;
-  else
-    tty.c_cflag &= ~CRTSCTS;
-  tcsetattr(fd, TCSANOW, &tty);
+    tcgetattr(fd, &tty);
+    if (on)
+        tty.c_cflag |= CRTSCTS;
+    else
+        tty.c_cflag &= ~CRTSCTS;
+    tcsetattr(fd, TCSANOW, &tty);
 #endif
 
 #ifdef _DGUX_SOURCE
-  if (ioctl(fd, TCGETX, &x) < 0) {
-    fprintf(stderr, _("can't get termiox attr.\n"));
-    return;
-  }
-  x.x_hflag = on ? RTSXOFF|CTSXON : 0;
+    if (ioctl(fd, TCGETX, &x) < 0) {
+        fprintf(stderr, _("can't get termiox attr.\n"));
+        return;
+    }
+    x.x_hflag = on ? RTSXOFF|CTSXON : 0;
 
-  if (ioctl(fd, TCSETX, &x) < 0) {
-    fprintf(stderr, _("can't set termiox attr.\n"));
-    return;
-  }
+    if (ioctl(fd, TCSETX, &x) < 0) {
+        fprintf(stderr, _("can't set termiox attr.\n"));
+        return;
+    }
 #endif
 }
 
@@ -455,16 +462,16 @@ void m_sethwf(int fd, int on)
 void m_setrts(int fd)
 {
 #if defined(TIOCM_RTS) && defined(TIOCMODG)
-  {
-    int mcs=0;
+    {
+        int mcs=0;
 
-    ioctl(fd, TIOCMODG, &mcs);
-    mcs |= TIOCM_RTS;
-    ioctl(fd, TIOCMODS, &mcs);
-  }
+        ioctl(fd, TIOCMODG, &mcs);
+        mcs |= TIOCM_RTS;
+        ioctl(fd, TIOCMODS, &mcs);
+    }
 #endif
 #ifdef _COHERENT
-  ioctl(fd, TIOCSRTS, 0);
+    ioctl(fd, TIOCSRTS, 0);
 #endif
 }
 

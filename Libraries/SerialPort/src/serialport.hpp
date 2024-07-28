@@ -36,8 +36,16 @@ struct PortConfig
         BR_256000 = 256000
     };
 
+    enum STOP_BITS
+    {
+        ONE_STOPBIT = 0,
+        ONE5_STOPBITS,
+        TWO_STOPBITS
+    };
+
     int portnum;
     BAUD_RATES baudrate;
+    STOP_BITS stopBits;
 };
 
 /*!
@@ -46,19 +54,20 @@ struct PortConfig
 class SerialPort : public QObject
 {
 public:
-    SerialPort(const PortConfig &portConfig);
+    SerialPort(const PortConfig &portConfig = {1, PortConfig::BR_9600, PortConfig::ONE_STOPBIT});
     virtual ~SerialPort();
 public:
-    bool open(int portnum,int baudrate);
-    bool openUsb(int portnum,int baudrate);
+    bool open();
+    bool openUsb();
     bool close();
     bool isOpened();
-    bool initComPort(int baudrate);
-
 
     bool write(const char* buf,int cnt);
     bool writeln(const char* buf,int cnt);
     bool read(char* buf, int bufsz, int* cnt);
+
+    PortConfig portConfig() const;
+    void setPortConfig(const PortConfig &newPortConfig);
 
 protected:
 
@@ -70,8 +79,15 @@ protected:
 #endif
 
 private:
+
+    static const int TX_BUF_SIZE; //!< Размер приемного буфера
+    static const int RX_BUF_SIZE; //!< Размер буфера передатчика
+    bool initComPort();
+
     SerialPort(const SerialPort &serialPort) = delete;
     SerialPort& operator=(const SerialPort&) = delete;
+
+    PortConfig m_portConfig;
 };
 
 #endif // SERIALPORT_HPP
