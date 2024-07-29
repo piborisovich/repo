@@ -48,6 +48,7 @@ struct PortConfig
     STOP_BITS stopBits;
 };
 
+
 /*!
  * \brief Базовый функционал последовательного порта
  */
@@ -56,7 +57,13 @@ class SerialPort : public QObject
 public:
     SerialPort(const PortConfig &portConfig = {1, PortConfig::BR_9600, PortConfig::ONE_STOPBIT});
     virtual ~SerialPort();
+
+
 public:
+
+    static const int TX_BUF_SIZE; //!< Размер приемного буфера
+    static const int RX_BUF_SIZE; //!< Размер буфера передатчика
+
     bool open();
     bool openUsb();
     bool close();
@@ -79,9 +86,6 @@ protected:
 #endif
 
 private:
-
-    static const int TX_BUF_SIZE; //!< Размер приемного буфера
-    static const int RX_BUF_SIZE; //!< Размер буфера передатчика
     bool initComPort();
 
     SerialPort(const SerialPort &serialPort) = delete;

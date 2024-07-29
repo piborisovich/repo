@@ -283,9 +283,9 @@ bool SerialPort::initComPort()
     //Установка временных задержек
     TimeOuts.ReadIntervalTimeout = MAXDWORD;
     TimeOuts.ReadTotalTimeoutMultiplier = 0;
-    TimeOuts.ReadTotalTimeoutConstant = 150;
+    TimeOuts.ReadTotalTimeoutConstant = 50;
     TimeOuts.WriteTotalTimeoutMultiplier = 0;
-    TimeOuts.WriteTotalTimeoutConstant = 150;
+    TimeOuts.WriteTotalTimeoutConstant = 50;
 
     if (!SetCommTimeouts(m_handle, &TimeOuts)){
         return false;

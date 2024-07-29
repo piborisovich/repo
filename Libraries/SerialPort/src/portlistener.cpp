@@ -1,47 +1,61 @@
 #include "portlistener.hpp"
 
-PortListener::PortListener(QObject *parent) :
-    QThread(parent)
+PortListener::PortListener(const PortConfig &portConfig, QObject *parent) :
+    QThread(parent),
+    m_port(new SerialPort(portConfig)),
+    m_stopped(true),
+    m_buffer_rcv(new char[SerialPort::TX_BUF_SIZE])
 {
-    m_port = new SerialPort();
-    sch_frame = 0;
+}
+
+PortListener::~PortListener()
+{
+    on_portDisconnect();
+    delete m_port;
+    delete [] m_buffer_rcv;
 }
 
 void PortListener::run()
 {
-    while (true){
+    PortConfig portConfig = m_port->portConfig();
+    m_stopped = true;
 
-        int portNum = Find_portXB();
-        if (portNum != 0){
-            QString portStr;
-            /*QString serialNumber = XBConvert::asciiToAddress(Serial_numberH,sizeof(Serial_numberH)) + ":" +
-                    XBConvert::asciiToAddress(Serial_numberL,sizeof(Serial_numberL));*/
+    if ( m_port->isOpened() ) {
+        m_port->close();
+    }
 
-            portStr = "COM%1";
-            portStr = portStr.arg(portNum);
-                    //.arg(serialNumber);
+    if ( portConfig.portnum != 0 ) {
+        if ( m_port->open() ) {
+            m_stopped = false;
+            emit portConnected(true);
 
+            while (!m_stopped) {
 
-            emit(initPort(portStr));
-            emit(portConnected(m_port));
-            while(true){
-                /*if (m_port->Read(buffer, 100, &receivedBytes)){
-                    if (receivedBytes != 0){
-                        QByteArray message = QByteArray(buffer, receivedBytes);
-                        emit(receiveFrame(message));
+                int cnt;
+                if ( m_port->read(m_buffer_rcv, SerialPort::TX_BUF_SIZE, &cnt) ) {
+                    if (cnt != -1 && cnt != 0 ) {
+                        on_received(m_buffer_rcv, cnt);
                     }
-                }*/
-                receiveData();
-                usleep(200000);
+                } else {
+                    m_stopped = false;
+                }
+                usleep(200);
             }
-
-        } else {
-            QString portStr;
-            portStr = "Недоступен";
-            emit(initPort(portStr));
+            m_port->close();
         }
+    }
+    emit portConnected(false);
+}
 
-        usleep(1000);
+void PortListener::on_portDisconnect()
+{
+    m_stopped = true;
+}
+
+void PortListener::sendData(const QByteArray &data)
+{
+    if ( !m_port->write(data.data(), data.size()) ) {
+        on_portDisconnect();
     }
 }
 
