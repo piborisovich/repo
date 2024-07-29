@@ -37,7 +37,7 @@ void PortListener::run()
                         on_received(m_buffer_rcv, cnt);
                     }
                 } else {
-                    m_stopped = false;
+                    m_stopped = true;
                 }
                 usleep(200);
             }
