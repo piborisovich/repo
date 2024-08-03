@@ -12,6 +12,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 BUILDDIR	= $$PWD/../build/$$TARGET
+ROOT            = $$PWD
 
 UI_DIR		= $${BUILDDIR}/ui
 MOC_DIR		= $${BUILDDIR}/moc
@@ -24,4 +25,5 @@ equals(TEMPLATE, app) {
 
 equals(TEMPLATE, lib) {
     DESTDIR = $$PWD/../LIB
+    DEFINES += MAKE_LIB
 }
