@@ -1,6 +1,6 @@
 # Repository structure
 ```
-├──App - #Applications  
+├──App - Applications  
 │   ├───HexViewerTest - Test application for hex view  
 │   ├───PocoServerTest - Test simple server application using poco library  
 │   ├───SimpleVncViewer - VNC Viewer  
