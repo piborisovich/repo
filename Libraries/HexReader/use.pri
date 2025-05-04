@@ -1,2 +1,9 @@
 INCLUDEPATH += $$PWD/include
-LIBS += -L../../../LIB -lHexReader
+
+contains( CONFIG, staticlib ) {
+    LIBS += $$ROOT/../LIB/libHexReader.a
+} else {
+    LIBS += -L$$ROOT/../LIB -lHexReader
+}
+
+

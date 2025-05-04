@@ -1,10 +1,12 @@
 ﻿#ifndef HEXTYPES_HPP
 #define HEXTYPES_HPP
 
-namespace Hex
+#include "hex_global.hpp"
+
+namespace HEX
 {
 /*!
- * \brief Возможные режимы Intel Hex. Режим определяет допустимый набор записей
+ * \brief Режим Intel Hex
  */
 enum class HexAddressingMode
 {
@@ -12,6 +14,7 @@ enum class HexAddressingMode
     Mode16bit,
     Mode32bit,
 };
-} //Hex
 
-#endif // HEXTYPES_HPP
+} //HEXLib
+
+#endif //HEXTYPES_HPP

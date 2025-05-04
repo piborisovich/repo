@@ -1,5 +1,4 @@
-#ifndef HEX_GLOBAL_HPP
-#define HEX_GLOBAL_HPP
+#pragma once
 
 #include <QtGlobal>
 
@@ -16,5 +15,3 @@
 #endif //Q_OS_WIN32
 
 #endif //MAKE_STATIC_LIB
-
-#endif //HEX_GLOBAL_HPP

@@ -1,7 +1,7 @@
-#ifndef HEX_GLOBAL_HPP
-#define HEX_GLOBAL_HPP
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
-#include <QtGlobal>
+#include<QtCore>
 
 #ifndef MAKE_STATIC_LIB
 
@@ -17,4 +17,4 @@
 
 #endif //MAKE_STATIC_LIB
 
-#endif //HEX_GLOBAL_HPP
+#endif // COMMON_HPP
