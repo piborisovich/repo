@@ -2,15 +2,22 @@ INCLUDEPATH += $$PWD
 
 include($$PWD/interfaces/interfaces.pri)
 
-HEADERS += $$PWD/ChecksumCheckerGenerator.hpp \
-           $$PWD/HexReader.hpp \
-           $$PWD/HexReadonlyDataset.hpp \
-           $$PWD/HexRecord.hpp \
-           $$PWD/HexToStringCodec.hpp \
-           $$PWD/hextypes.hpp \
-           $$PWD/hex_global.hpp
+contains( QT, gui ) {
+    include($$PWD/gui/gui.pri)
+    include($$PWD/models/models.pri)
+}
 
-SOURCES += $$PWD/ChecksumCheckerGenerator.cpp \
-           $$PWD/HexReader.cpp \
-           $$PWD/HexRecord.cpp \
-           $$PWD/HexToStringCodec.cpp
+HEADERS += $$PWD/hexreader.hpp \
+    $$PWD/checksumcheckergenerator.hpp \
+    $$PWD/hex_global.hpp \
+    $$PWD/hexrecord.hpp \
+    $$PWD/hextostringcodec.hpp \
+    $$PWD/hexreadonlydataset.hpp\
+    $$PWD/hextypes.hpp
+SOURCES += $$PWD/hexreader.cpp \
+    $$PWD/checksumcheckergenerator.cpp \
+    $$PWD/hexrecord.cpp \
+    $$PWD/hextostringcodec.cpp
+
+
+

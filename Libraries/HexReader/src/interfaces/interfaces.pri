@@ -1,8 +1,9 @@
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/IChecksumCheckerGenerator.hpp \
-           $$PWD/IHexReader.hpp \
-           $$PWD/IHexRecord.hpp \
-           $$PWD/IHexToStringCodec.hpp
+HEADERS += $$PWD/ihexrecord.hpp \
+           $$PWD/ichecksumcheckergenerator.hpp \
+           $$PWD/ihexreader.hpp \
+           $$PWD/ihextostringcodec.hpp
+
 
 
