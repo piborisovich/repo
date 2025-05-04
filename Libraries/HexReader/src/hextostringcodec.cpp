@@ -10,7 +10,7 @@ const QString HexToStringCodec::stringRegExp = "[0-9ABCDEF]{2}";
 
 HexToStringCodec::HexToStringCodec()
 {
-    m_stringRegExp.reset(new QRegExp(stringRegExp));
+    m_stringRegExp.reset( new QRegularExpression(stringRegExp) );
 }
 
 QString HexToStringCodec::encode(uint8_t data) const
@@ -20,7 +20,8 @@ QString HexToStringCodec::encode(uint8_t data) const
 
 uint8_t HexToStringCodec::decode(const QString &data) const
 {
-    if (!m_stringRegExp->exactMatch(data)) {
+    auto match = m_stringRegExp->match(data);
+    if ( !match.hasMatch() ) {
         signalizeStringIsNotDecodeable(data);
     }
 

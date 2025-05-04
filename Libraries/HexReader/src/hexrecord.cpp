@@ -23,7 +23,7 @@ const uint32_t HexRecord::dataOffset = 4U;
 
 HexRecord::HexRecord(const QString &data) : Interfaces::IHexRecord(data)
 {
-    m_lineRegExp.reset(new QRegExp(lineRegexp));
+    m_lineRegExp.reset( new QRegularExpression(lineRegexp) );
     m_codec.reset(new HexToStringCodec());
     m_checksumCheckerGenerator.reset(new ChecksumCheckerGenerator());
 
@@ -33,7 +33,8 @@ HexRecord::HexRecord(const QString &data) : Interfaces::IHexRecord(data)
     }
 
     auto dataUpper = data.toUpper();
-    if (!m_lineRegExp->exactMatch(dataUpper)) {
+    auto match = m_lineRegExp->match(dataUpper);
+    if ( !match.hasMatch() ) {
         signalizeLineIsNotParseable(data);
     }
 

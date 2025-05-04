@@ -5,7 +5,7 @@
 #include "interfaces/ihextostringcodec.hpp"
 #include "interfaces/ichecksumcheckergenerator.hpp"
 
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QObject>
 
 #include <memory>
@@ -44,7 +44,7 @@ private:
     static const uint32_t startLinearAddressRecordReclen;     //!< RECLEN для записи типа StartLinearAddress
     static const uint32_t dataOffset;                         //!<Смещение данных в массиве байт, полученом из строки
 
-    std::unique_ptr<QRegExp> m_lineRegExp;
+    std::unique_ptr<QRegularExpression> m_lineRegExp;
     std::unique_ptr<Interfaces::IHexToStringCodec> m_codec;
     std::unique_ptr<Interfaces::IChecksumCheckerGenerator> m_checksumCheckerGenerator;
 

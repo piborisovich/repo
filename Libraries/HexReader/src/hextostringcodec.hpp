@@ -3,7 +3,7 @@
 
 #include "interfaces/ihextostringcodec.hpp"
 
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <memory>
 
@@ -29,7 +29,7 @@ public:
 
 private:
     static const QString stringRegExp;      //!< Регулярное выражение для данных
-    std::unique_ptr<QRegExp> m_stringRegExp; //!<
+    std::unique_ptr<QRegularExpression> m_stringRegExp; //!<
 
     /*!
      * \brief Сгенерировать исключение, если строка некорректна
