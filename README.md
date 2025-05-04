@@ -8,9 +8,8 @@
 │   ├───TestGraphics - Test QGraphics application  
 │   └───TestSerialPort - Test serial port application  
 └──Libraries  
-    ├──GUI - GUI libraries  
-    │   ├───SimpleHexViewer  
-    │   └───SimpleTreeModel  
-    ├──HexReader  
-    └──SerialPort  
+    ├──CoreLib - Library, containing Core functions and classes
+    ├──GuiLib - GUI Library  
+    ├──HexReader - Library, containing classes and functions for Intel Hex format 
+    └──SerialPort - Library, containing classes and functions for serial port
 ```
