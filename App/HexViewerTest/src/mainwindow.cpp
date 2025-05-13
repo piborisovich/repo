@@ -1,7 +1,7 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
-#include <HexViewer>
+#include <HexView>
 
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -9,7 +9,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),
-    m_tableView(new Hex::HexView(this))
+    m_tableView(new HEX::GUI::HexView(this))
 {
     ui->setupUi(this);
     initGUI();
@@ -28,14 +28,21 @@ void MainWindow::on_open()
                                                 QString("Intel Hex (*.hex)"));
 
     if ( !path.isEmpty() ) {
-        Hex::HexView *viewer = qobject_cast<Hex::HexView*>(m_tableView);
-        viewer->load(path);
+        HEX::GUI::HexView *viewer = qobject_cast<HEX::GUI::HexView*>(m_tableView);
+
+        if ( viewer ) {
+            viewer->load(path);
+        }
     }
 }
 
 void MainWindow::on_close()
 {
+    HEX::GUI::HexView *viewer = qobject_cast<HEX::GUI::HexView*>(m_tableView);
 
+    if ( viewer ) {
+        viewer->load( QString() );
+    }
 }
 
 void MainWindow::initGUI()
