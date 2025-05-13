@@ -1,8 +1,6 @@
 ﻿#ifndef HEXTYPES_HPP
 #define HEXTYPES_HPP
 
-#include "hex_global.hpp"
-
 namespace HEX
 {
 /*!

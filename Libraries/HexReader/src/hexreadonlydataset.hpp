@@ -3,6 +3,8 @@
 
 #include "hextypes.hpp"
 
+#include "hex_global.hpp"
+
 #include <Core/Types/Dataset>
 
 #include <QTextStream>
@@ -34,7 +36,7 @@ inline QTextStream& operator<<(QTextStream &out, const HexReadonlyDataset &dataS
 
         auto current = dataSet.data.cbegin();
         auto address = current.key();
-        auto next = current + 1;
+        auto next = std::next(current);
 
         //Вывод адреса первого байта в строке
         auto printVerticalHeader {
