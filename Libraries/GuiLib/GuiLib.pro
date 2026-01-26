@@ -1,6 +1,8 @@
 TEMPLATE = lib
 TARGET = GuiLib
 
+DEFINES += BUILD_WIDGETS_LIB
+
 include($$PWD/src/src.pri)
 include($$PWD/../../template.pri)
 
