@@ -1,6 +1,8 @@
 INCLUDEPATH += $$PWD
 
 include($$PWD/models/models.pri)
+include($$PWD/views/views.pri)
+include($$PWD/delegates/delegates.pri)
 
 HEADERS += \
     $$PWD/messagebox.hpp \
