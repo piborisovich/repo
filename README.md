@@ -2,7 +2,9 @@
 # Repository structure
 ```
 ├──App - Applications  
-│   ├───HexViewerTest - Test application for hex view  
+│   ├───GraphPainterBuilder - Test painter application with function of comleting charts 
+│   ├───HexViewerTest - Test application for hex view 
+│   ├───IronLogicGuardTest  - Application for test IronLogicGuard library
 │   ├───PocoServerTest - Test simple server application using poco library  
 │   ├───SimpleVncViewer - VNC Viewer  
 │   ├───TestGraphics - Test QGraphics application  
