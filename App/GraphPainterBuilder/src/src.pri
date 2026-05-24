@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += \
            $$PWD/commands.hpp \
+           $$PWD/graphicsview.hpp \
            $$PWD/iscenelistener.hpp \
            $$PWD/core.hpp \
            $$PWD/mainwindow.hpp \
@@ -10,6 +11,7 @@ HEADERS += \
 SOURCES += \
            $$PWD/commands.cpp \
            $$PWD/core.cpp \
+           $$PWD/graphicsview.cpp \
            $$PWD/main.cpp \
            $$PWD/graphicsscene.cpp \
            $$PWD/mainwindow.cpp \

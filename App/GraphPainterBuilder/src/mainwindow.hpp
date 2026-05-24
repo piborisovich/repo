@@ -3,6 +3,7 @@
 
 #include "core.hpp"
 #include "iscenelistener.hpp"
+#include "graphicsview.hpp"
 
 #include <QDateTime>
 #include <QListWidget>
@@ -11,7 +12,7 @@
 
 #define logDebug() qDebug().noquote() << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz")
 
-#include "graphicsscene.hpp"
+
 
 #include <QLabel>
 #include <QMainWindow>
@@ -30,9 +31,6 @@ public:
     MainWindow(Core *core, QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_openTriggered();
-
 private:
     void init();
 
@@ -42,15 +40,10 @@ private:
 
     void updateColorButtonLayout(QColor color);
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
 private:
 
     Ui::MainWindow *ui;
-    QUndoStack *m_undoStack;  //Стек команд для отмены
-    GraphicsScene *m_scene; //Сцена
-    QGraphicsView *m_view;  //Представление
+    GraphicsView *m_view;   //!Представление
     QLabel *m_statusLabel;
 
     QListWidget *m_layersList; //Слои

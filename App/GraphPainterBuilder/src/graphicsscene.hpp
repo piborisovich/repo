@@ -8,6 +8,9 @@
 #include <QUndoStack>
 #include <QList>
 
+/*!
+ * \brief Сцена
+ */
 class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT

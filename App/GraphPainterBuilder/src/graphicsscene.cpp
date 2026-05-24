@@ -89,8 +89,6 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             // Передаем созданную линию под управление UndoStack
             removeItem(m_previewLine);
             m_undoStack->push( new Commands::AddItemCommand( this, m_previewLine) );
-            m_previewLine->setFlag(QGraphicsItem::ItemIsSelectable);
-            m_previewLine->setFlag(QGraphicsItem::ItemIsMovable);
             m_previewLine = nullptr;
         }
         else if (m_currentTool == "Eraser" && !m_erasedItemsThisStroke.isEmpty()) {
@@ -142,12 +140,10 @@ void GraphicsScene::processDrawing(QPointF pos)
     else if (m_currentTool == "Rectangle") {
         newItem = new QGraphicsRectItem(pos.x() - 25, pos.y() - 25, 50, 50);
         static_cast<QGraphicsRectItem*>(newItem)->setPen(pen);
-        newItem->setFlag(QGraphicsItem::ItemIsSelectable);
     }
     else if (m_currentTool == "Circle") {
         newItem = new QGraphicsEllipseItem(pos.x() - 25, pos.y() - 25, 50, 50);
         static_cast<QGraphicsEllipseItem*>(newItem)->setPen(pen);
-        newItem->setFlag(QGraphicsItem::ItemIsSelectable);
     }
 
     if (newItem) {
@@ -185,6 +181,21 @@ QString GraphicsScene::currentTool() const
 void GraphicsScene::setCurrentTool(const QString &newCurrentTool)
 {
     m_currentTool = newCurrentTool;
+
+    QList<QGraphicsItem*> allItems = items();
+
+    if ( newCurrentTool == "Select") {
+        for (QGraphicsItem *item : allItems) {
+            item->setFlag(QGraphicsItem::ItemIsSelectable);
+            item->setFlag(QGraphicsItem::ItemIsMovable);
+        }
+    } else {
+        for (QGraphicsItem *item : allItems) {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            item->setFlag(QGraphicsItem::ItemIsMovable, false);
+            item->setSelected(false);
+        }
+    }
 }
 
 void GraphicsScene::addImage(const QString &path, QSize &imageSize)

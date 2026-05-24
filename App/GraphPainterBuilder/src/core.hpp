@@ -4,6 +4,7 @@
 #define logDebug() qDebug().noquote() << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz")
 
 #include <QApplication>
+#include <QUndoStack>
 
 class Core : public QApplication
 {
@@ -13,9 +14,6 @@ public:
     Core(int &argc, char **argv);
 
     ~Core();
-
-public slots:
-    void on_ImageOpen();
 
 private:
     Q_DISABLE_COPY(Core)

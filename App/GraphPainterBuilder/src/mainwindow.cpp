@@ -14,9 +14,7 @@ static const int DEFAULT_LAYER_Z = 20;
 MainWindow::MainWindow(Core *core, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_undoStack(new QUndoStack(this))
-    , m_scene(new GraphicsScene(m_undoStack))
-    , m_view(new QGraphicsView(m_scene, this))
+    , m_view(new GraphicsView(this))
     , m_statusLabel(new QLabel("", this))
     , m_layersList(new QListWidget())
     , m_colorButton(new QPushButton())
@@ -24,7 +22,7 @@ MainWindow::MainWindow(Core *core, QWidget *parent)
     , m_core(core)
 {
     ui->setupUi(this);
-    m_scene->addSceneListener(this);
+    m_view->addSceneListener(this);
 
     init();
 }
@@ -34,25 +32,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_openTriggered()
-{
-    //auto fileName = QFileDialog::getOpenFileName(this, )
-}
-
 void MainWindow::init()
 {
     setWindowTitle( Core::applicationName() );
 
     ui->statusbar->addWidget(m_statusLabel);
 
-    m_view->setMouseTracking(true);
-    m_view->setUpdatesEnabled(true);
-
-    m_view->setSceneRect( QRectF(QPointF(0,0), QSizeF(800, 600)) );
-
     centralWidget()->layout()->addWidget(m_view);
-
-    m_view->setRenderHint(QPainter::Antialiasing);
 
     // --- ЛЕВАЯ ПАНЕЛЬ: ИНСТРУМЕНТЫ И НАСТРОЙКИ ---
     QWidget *leftPanel = new QWidget();
@@ -125,8 +111,8 @@ void MainWindow::init()
     layer1->setData(Qt::UserRole, 10);
 
     m_layersList->setCurrentRow(1);
-    m_scene->setCurrentLayerZ(DEFAULT_LAYER_Z);
-    m_scene->setCurrentTool("Select");
+    m_view->setCurrentLayerZ(DEFAULT_LAYER_Z);
+    m_view->setCurrentTool("Select");
     rightLayout->addWidget(m_layersList);
 
     QPushButton *addLayerButton = new QPushButton(Strings::ADD_LAYER_TEXT);
@@ -155,28 +141,28 @@ void MainWindow::init()
     // Привязка Undo/Redo к кнопкам интерфейса
     auto result = connect(undoButton,
                           &QPushButton::clicked,
-                          m_undoStack,
-                          &QUndoStack::undo);
+                          m_view,
+                          &GraphicsView::undo);
     Q_ASSERT(result);
 
     result = connect(redoButton,
                      &QPushButton::clicked,
-                     m_undoStack,
-                     &QUndoStack::redo);
+                     m_view,
+                     &GraphicsView::redo);
     Q_ASSERT(result);
 
     // Автоматическое управление доступностью кнопок Назад/Вперед
     undoButton->setEnabled(false);
     redoButton->setEnabled(false);
 
-    result = connect(m_undoStack,
-                     &QUndoStack::canUndoChanged,
+    result = connect(m_view,
+                     &GraphicsView::canUndoChanged,
                      undoButton,
                      &QPushButton::setEnabled);
     Q_ASSERT(result);
 
-    result = connect(m_undoStack,
-                     &QUndoStack::canRedoChanged,
+    result = connect(m_view,
+                     &GraphicsView::canRedoChanged,
                      redoButton,
                      &QPushButton::setEnabled);
     Q_ASSERT(result);
@@ -185,7 +171,7 @@ void MainWindow::init()
                      &QComboBox::currentTextChanged,
                      this,
                      [this](const QString &tool){
-                         m_scene->setCurrentTool(tool);
+                         m_view->setCurrentTool(tool);
 
                          if ( tool == "Select") {
                              m_view->setDragMode(QGraphicsView::RubberBandDrag);
@@ -201,7 +187,7 @@ void MainWindow::init()
                      &QSlider::valueChanged,
                      this,
                      [this](int value){
-                         m_scene->setBrushSize(value);
+                         m_view->setBrushSize(value);
     });
     Q_ASSERT(result);
 
@@ -209,11 +195,11 @@ void MainWindow::init()
                      &QPushButton::clicked,
                      this,
                      [this](){
-                         QColor color = QColorDialog::getColor(m_scene->currentColor(),
+                         QColor color = QColorDialog::getColor(m_view->currentColor(),
                                                                this,
                                                                Strings::SELECT_COLOR_TEXT);
                          if (color.isValid()) {
-                             m_scene->setCurrentColor(color);
+                             m_view->setCurrentColor(color);
                              updateColorButtonLayout(color);
                          }
     });
@@ -226,7 +212,7 @@ void MainWindow::init()
                          if (row < 0) return;
                          QListWidgetItem *currentItem = m_layersList->item(row);
                          if (currentItem) {
-                             m_scene->setCurrentLayerZ(currentItem->data(Qt::UserRole).toInt());
+                             m_view->setCurrentLayerZ(currentItem->data(Qt::UserRole).toInt());
                          }
                      });
     Q_ASSERT(result);
@@ -247,7 +233,7 @@ void MainWindow::init()
                              newLayer->setData(Qt::UserRole, m_nextLayerZ);
                              m_layersList->insertItem(0, newLayer);
                              m_layersList->setCurrentItem(newLayer);
-                             m_scene->setCurrentLayerZ(m_nextLayerZ);
+                             m_view->setCurrentLayerZ(m_nextLayerZ);
                              m_nextLayerZ += 10;
                          }
                      });
@@ -273,15 +259,8 @@ void MainWindow::init()
                                                              QMessageBox::Yes | QMessageBox::No);
                          if (result == QMessageBox::Yes) {
                              int targetZ = currentItem->data(Qt::UserRole).toInt();
-                             QList<QGraphicsItem*> allItems = m_scene->items();
-                             for (QGraphicsItem *item : allItems) {
-                                 if (item->zValue() == targetZ) {
-                                     m_scene->removeItem(item);
-                                     delete item;
-                                 }
-                             }
+                             m_view->clearLayer(targetZ);
                              delete currentItem;
-                             m_undoStack->clear(); // Очищаем историю, так как элементы физически удалены
                          }
                      });
     Q_ASSERT(result);
@@ -290,14 +269,13 @@ void MainWindow::init()
                      &QPushButton::clicked,
                      this,
                      [this](){
-                         if(m_scene->items().isEmpty()) return;
+                         if ( m_view->isSceneEmpty() ) return;
                          auto result = QMessageBox::question(this,
                                                              Strings::CLEAR_CANVAS_MSG_BOX_TITLE,
                                                              Strings::CLEAR_CANVAS_MSG_BOX_QUESTION,
                                                              QMessageBox::Yes | QMessageBox::No);
                          if (result == QMessageBox::Yes) {
-                             m_scene->clear();
-                             m_undoStack->clear();
+                             m_view->clear();
                          }
                      });
     Q_ASSERT(result);
@@ -315,7 +293,7 @@ void MainWindow::init()
                          QSize imageSize;
                          auto sr = m_view->sceneRect();
 
-                         m_scene->addImage(filePath, imageSize);
+                         m_view->addImage(filePath, imageSize);
 
                          m_view->setSceneRect( QRectF( QPointF(0, 0),
                                                      QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
@@ -334,16 +312,7 @@ void MainWindow::init()
                                                                          "PNG Image (*.png);;JPEG Image (*.jpg)");
                          if ( filePath.isEmpty() ) return;
 
-                         QRectF sceneRect = m_scene->sceneRect();
-                         QImage image(sceneRect.size().toSize(), QImage::Format_ARGB32);
-                         image.fill(filePath.endsWith(".png", Qt::CaseInsensitive) ? Qt::transparent : Qt::white);
-
-                         QPainter painter(&image);
-                         painter.setRenderHint(QPainter::Antialiasing);
-                         m_scene->render(&painter);
-                         painter.end();
-
-                         if ( image.save(filePath) ) {
+                         if ( m_view->save(filePath) ) {
                              QMessageBox::information(this,
                                                       Strings::SAVE_SUCCESS_MSG_BOX_TITLE,
                                                       Strings::SAVE_SUCCESS_MSG_BOX_MESSAGE);
@@ -355,12 +324,6 @@ void MainWindow::init()
                           &QAction::triggered,
                           m_core,
                           &Core::exit);
-    Q_ASSERT(result);
-
-    result = connect(ui->actionOpen,
-                     &QAction::triggered,
-                     this,
-                     &MainWindow::on_openTriggered);
     Q_ASSERT(result);
 }
 
@@ -386,10 +349,4 @@ void MainWindow::updateColorButtonLayout(QColor color)
     m_colorButton->setStyleSheet(QString("background-color: %1;"
                                          "min-height: 30px;"
                                          "border: 1px solid #555;").arg(color.name()));
-}
-
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
-    qDebug() << m_view->size() << m_view->sceneRect();
-    QMainWindow::resizeEvent(event);
 }
