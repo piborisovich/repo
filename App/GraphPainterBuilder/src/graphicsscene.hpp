@@ -22,6 +22,12 @@ public:
 
     QString currentTool() const;
     void setCurrentTool(const QString &newCurrentTool);
+    /*!
+     * \brief addImage
+     * \param path - Image path
+     * \param imageSize - opened image size (return)
+     */
+    void addImage(const QString &path, QSize &imageSize);
 
     int brushSize() const;
     void setBrushSize(int newBrushSize);

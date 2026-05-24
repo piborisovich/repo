@@ -48,7 +48,8 @@ void MainWindow::init()
     m_view->setMouseTracking(true);
     m_view->setUpdatesEnabled(true);
 
-    m_view->setSceneRect( QRectF(QPointF(0,0), QSize(800, 600)) );
+    m_view->setSceneRect( QRectF(QPointF(0,0), QSizeF(800, 600)) );
+
     centralWidget()->layout()->addWidget(m_view);
 
     m_view->setRenderHint(QPainter::Antialiasing);
@@ -68,7 +69,7 @@ void MainWindow::init()
     // Выбор инструмента
     leftLayout->addWidget( new QLabel(Strings::TOOL_TEXT) );
     QComboBox *toolBox = new QComboBox();
-    toolBox->addItems( {"Brush", "Eraser", "Line", "Rectangle", "Circle"} );
+    toolBox->addItems( {"Select", "Drag", "Brush", "Eraser", "Line", "Rectangle", "Circle"} );
     leftLayout->addWidget(toolBox);
 
     // Настройка размера
@@ -85,6 +86,14 @@ void MainWindow::init()
 
     // Экспорт холста в файл
     leftLayout->addSpacing(15);
+
+    QPushButton *importButton = new QPushButton(Strings::IMPORT_TEXT);
+    importButton->setStyleSheet("background-color: #e0f2fe;"
+                                "font-weight: bold;"
+                                "min-height: 30px;"
+                                "border: 1px solid #0284c7;");
+    leftLayout->addWidget(importButton);
+
     QPushButton *exportButton = new QPushButton(Strings::EXPORT_TEXT);
     exportButton->setStyleSheet("background-color: #e0f2fe;"
                                 "font-weight: bold;"
@@ -117,7 +126,7 @@ void MainWindow::init()
 
     m_layersList->setCurrentRow(1);
     m_scene->setCurrentLayerZ(DEFAULT_LAYER_Z);
-    m_scene->setCurrentTool("Brush");
+    m_scene->setCurrentTool("Select");
     rightLayout->addWidget(m_layersList);
 
     QPushButton *addLayerButton = new QPushButton(Strings::ADD_LAYER_TEXT);
@@ -177,6 +186,14 @@ void MainWindow::init()
                      this,
                      [this](const QString &tool){
                          m_scene->setCurrentTool(tool);
+
+                         if ( tool == "Select") {
+                             m_view->setDragMode(QGraphicsView::RubberBandDrag);
+                         } else if ( tool == "Drag") {
+                             m_view->setDragMode(QGraphicsView::ScrollHandDrag);
+                         } else {
+                             m_view->setDragMode(QGraphicsView::NoDrag);
+                         }
     });
     Q_ASSERT(result);
 
@@ -285,6 +302,28 @@ void MainWindow::init()
                      });
     Q_ASSERT(result);
 
+    result = connect(importButton,
+                     &QPushButton::clicked,
+                     this,
+                     [this]() {
+                         QString filePath = QFileDialog::getOpenFileName(this,
+                                                                         Strings::OPEN_IMAGE_DIALOIG_TITLE,
+                                                                         "",
+                                                                         "PNG Image (*.png);;JPEG Image (*.jpg)");
+                         if ( filePath.isEmpty() ) return;
+
+                         QSize imageSize;
+                         auto sr = m_view->sceneRect();
+
+                         m_scene->addImage(filePath, imageSize);
+
+                         m_view->setSceneRect( QRectF( QPointF(0, 0),
+                                                     QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
+                                                            qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
+
+                     });
+    Q_ASSERT(result);
+
     result = connect(exportButton,
                      &QPushButton::clicked,
                      this,
@@ -347,4 +386,10 @@ void MainWindow::updateColorButtonLayout(QColor color)
     m_colorButton->setStyleSheet(QString("background-color: %1;"
                                          "min-height: 30px;"
                                          "border: 1px solid #555;").arg(color.name()));
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    qDebug() << m_view->size() << m_view->sceneRect();
+    QMainWindow::resizeEvent(event);
 }

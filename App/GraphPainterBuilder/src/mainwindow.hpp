@@ -42,6 +42,9 @@ private:
 
     void updateColorButtonLayout(QColor color);
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
 
     Ui::MainWindow *ui;

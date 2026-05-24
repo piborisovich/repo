@@ -19,6 +19,7 @@ extern const char *TOOL_TEXT;
 extern const char *BRUSH_SIZE_TEXT;
 extern const char *PALETTE_TEXT;
 
+extern const char *IMPORT_TEXT;
 extern const char *EXPORT_TEXT;
 extern const char *CLEAR_CANVAS_TEXT;
 
@@ -43,6 +44,7 @@ extern const char *REMOVE_LAYER_ERROR_MSG_BOX_MESSAGE;
 extern const char *CLEAR_CANVAS_MSG_BOX_TITLE;
 extern const char *CLEAR_CANVAS_MSG_BOX_QUESTION;
 
+extern const char *OPEN_IMAGE_DIALOIG_TITLE;
 extern const char *SAVE_IMAGE_DIALOIG_TITLE;
 
 extern const char *SAVE_SUCCESS_MSG_BOX_TITLE;

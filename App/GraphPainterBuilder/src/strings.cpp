@@ -18,6 +18,7 @@ const char *TOOL_TEXT = "<b>Tool:</b>";
 const char *BRUSH_SIZE_TEXT = "<b>Brush size/border:</b>";
 const char *PALETTE_TEXT = "<b>Palette:</b>";
 
+const char *IMPORT_TEXT = "Import image";
 const char *EXPORT_TEXT = "Export to image";
 const char *CLEAR_CANVAS_TEXT = "Clear the canvas";
 
@@ -47,6 +48,7 @@ const char *CLEAR_CANVAS_MSG_BOX_QUESTION = "Are you sure you want "
                                             "to clear the canvas? "
                                             "(Undo history will be reset)";
 
+const char *OPEN_IMAGE_DIALOIG_TITLE = "Image import";
 const char *SAVE_IMAGE_DIALOIG_TITLE = "Image export";
 
 const char *SAVE_SUCCESS_MSG_BOX_TITLE = "Success";
