@@ -16,9 +16,8 @@ MainWindow::MainWindow(Core *core, QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_view(new GraphicsView(this))
     , m_statusLabel(new QLabel("", this))
-    , m_layersList(new QListWidget())
+    , m_layersWidget(new LayersWidget(Strings::LAYERS_TITLE, this))
     , m_colorButton(new QPushButton())
-    , m_nextLayerZ(40)
     , m_core(core)
 {
     ui->setupUi(this);
@@ -40,17 +39,11 @@ void MainWindow::init()
 
     centralWidget()->layout()->addWidget(m_view);
 
+    addDockWidget(Qt::RightDockWidgetArea, m_layersWidget);
+
     // --- ЛЕВАЯ ПАНЕЛЬ: ИНСТРУМЕНТЫ И НАСТРОЙКИ ---
     QWidget *leftPanel = new QWidget();
     QVBoxLayout *leftLayout = new QVBoxLayout(leftPanel);
-
-    // Кнопки Назад / Вперед
-    QHBoxLayout *undoRedoLayout = new QHBoxLayout();
-    QPushButton *undoButton = new QPushButton(Strings::UNDO_TEXT);
-    QPushButton *redoButton = new QPushButton(Strings::REDO_TEXT);
-    undoRedoLayout->addWidget(undoButton);
-    undoRedoLayout->addWidget(redoButton);
-    leftLayout->addLayout(undoRedoLayout);
 
     // Выбор инструмента
     leftLayout->addWidget( new QLabel(Strings::TOOL_TEXT) );
@@ -98,73 +91,46 @@ void MainWindow::init()
 
     leftLayout->addStretch();
 
-    // --- ПРАВАЯ ПАНЕЛЬ: УПРАВЛЕНИЕ СЛОЯМИ ---
-    QWidget *rightPanel = new QWidget();
-    QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
-    rightLayout->addWidget(new QLabel(Strings::LAYERS_TITLE));
-
-    QListWidgetItem *layer3 = new QListWidgetItem(Strings::LAYER_NAME_3, m_layersList);
-    layer3->setData(Qt::UserRole, 30);
-    QListWidgetItem *layer2 = new QListWidgetItem(Strings::LAYER_NAME_2, m_layersList);
-    layer2->setData(Qt::UserRole, 20);
-    QListWidgetItem *layer1 = new QListWidgetItem(Strings::LAYER_NAME_1, m_layersList);
-    layer1->setData(Qt::UserRole, 10);
-
-    m_layersList->setCurrentRow(1);
     m_view->setCurrentLayerZ(DEFAULT_LAYER_Z);
     m_view->setCurrentTool("Select");
-    rightLayout->addWidget(m_layersList);
 
-    QPushButton *addLayerButton = new QPushButton(Strings::ADD_LAYER_TEXT);
-    addLayerButton->setStyleSheet("background-color: #f0fdf4; "
-                                  "border: 1px solid #16a34a; "
-                                  "min-height: 25px; "
-                                  "font-weight: bold;");
-    rightLayout->addWidget(addLayerButton);
-
-    QPushButton *deleteLayerButton = new QPushButton(Strings::DELETE_LAYER_TEXT);
-    deleteLayerButton->setStyleSheet("background-color: #fff5f5; "
-                                     "border: 1px solid #e53e3e; "
-                                     "min-height: 25px;");
-    rightLayout->addWidget(deleteLayerButton);
 
     // --- ГЛАВНАЯ КОМПОНОВКА ---
     QWidget *centralWidget = new QWidget();
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
     mainLayout->addWidget(leftPanel, 3);
     mainLayout->addWidget(m_view, 7);
-    mainLayout->addWidget(rightPanel, 3);
     setCentralWidget(centralWidget);
 
     // --- ЛОГИКА, СИГНАЛЫ И СЛОТЫ ---
 
     // Привязка Undo/Redo к кнопкам интерфейса
-    auto result = connect(undoButton,
-                          &QPushButton::clicked,
+    auto result = connect(ui->actionUndo,
+                          &QAction::triggered,
                           m_view,
                           &GraphicsView::undo);
     Q_ASSERT(result);
 
-    result = connect(redoButton,
-                     &QPushButton::clicked,
+    result = connect(ui->actionRedo,
+                     &QAction::triggered,
                      m_view,
                      &GraphicsView::redo);
     Q_ASSERT(result);
 
     // Автоматическое управление доступностью кнопок Назад/Вперед
-    undoButton->setEnabled(false);
-    redoButton->setEnabled(false);
+    ui->actionUndo->setEnabled(false);
+    ui->actionRedo->setEnabled(false);
 
     result = connect(m_view,
                      &GraphicsView::canUndoChanged,
-                     undoButton,
-                     &QPushButton::setEnabled);
+                     ui->actionUndo,
+                     &QAction::setEnabled);
     Q_ASSERT(result);
 
     result = connect(m_view,
                      &GraphicsView::canRedoChanged,
-                     redoButton,
-                     &QPushButton::setEnabled);
+                     ui->actionRedo,
+                     &QAction::setEnabled);
     Q_ASSERT(result);
 
     result = connect(toolBox,
@@ -205,64 +171,16 @@ void MainWindow::init()
     });
     Q_ASSERT(result);
 
-    result = connect(m_layersList,
-                     &QListWidget::currentRowChanged,
-                     this,
-                     [this](int row){
-                         if (row < 0) return;
-                         QListWidgetItem *currentItem = m_layersList->item(row);
-                         if (currentItem) {
-                             m_view->setCurrentLayerZ(currentItem->data(Qt::UserRole).toInt());
-                         }
-                     });
+    result = connect(m_layersWidget,
+                     &LayersWidget::layerZChanged,
+                     m_view,
+                     &GraphicsView::setCurrentLayerZ);
     Q_ASSERT(result);
 
-    result = connect(addLayerButton,
-                     &QPushButton::clicked,
-                     this,
-                     [this](){
-                         bool ok;
-                         QString layerName = QInputDialog::getText(this,
-                                                                   Strings::NEW_LAYER_DIALOG_TITLE,
-                                                                   Strings::NEW_LAYER_DIALOG_LABEL,
-                                                                   QLineEdit::Normal,
-                                                                   QString("Layer %1").arg(m_layersList->count() + 1),
-                                                                   &ok);
-                         if ( ok && !layerName.isEmpty() ) {
-                             QListWidgetItem *newLayer = new QListWidgetItem(layerName);
-                             newLayer->setData(Qt::UserRole, m_nextLayerZ);
-                             m_layersList->insertItem(0, newLayer);
-                             m_layersList->setCurrentItem(newLayer);
-                             m_view->setCurrentLayerZ(m_nextLayerZ);
-                             m_nextLayerZ += 10;
-                         }
-                     });
-    Q_ASSERT(result);
-
-    result = connect(deleteLayerButton,
-                     &QPushButton::clicked,
-                     this,
-                     [this]() {
-                         QListWidgetItem *currentItem = m_layersList->currentItem();
-                         if (!currentItem) return;
-                         if (m_layersList->count() <= 1) {
-                             QMessageBox::warning(this,
-                                                  Strings::REMOVE_LAYER_ERROR_MSG_BOX_TITLE,
-                                                  Strings::REMOVE_LAYER_ERROR_MSG_BOX_MESSAGE);
-                             return;
-                         }
-
-
-                         auto result = QMessageBox::question(this,
-                                                             Strings::REMOVE_LAYER_MSG_BOX_TITLE,
-                                                             QString(Strings::REMOVE_LAYER_MSG_BOX_QUESTION_TEMPLATE).arg(currentItem->text()),
-                                                             QMessageBox::Yes | QMessageBox::No);
-                         if (result == QMessageBox::Yes) {
-                             int targetZ = currentItem->data(Qt::UserRole).toInt();
-                             m_view->clearLayer(targetZ);
-                             delete currentItem;
-                         }
-                     });
+    result = connect(m_layersWidget,
+                     &LayersWidget::layerRemoved,
+                     m_view,
+                     &GraphicsView::clearLayer);
     Q_ASSERT(result);
 
     result = connect(clearCanvasButton,

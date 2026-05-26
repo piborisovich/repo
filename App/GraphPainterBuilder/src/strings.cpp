@@ -11,9 +11,6 @@ namespace Strings
 
 const char *APPLICATION_NAME = "Graph Painter Builder";
 
-const char *UNDO_TEXT = "↩ Undo";
-const char *REDO_TEXT = "↪ Redo";
-
 const char *TOOL_TEXT = "<b>Tool:</b>";
 const char *BRUSH_SIZE_TEXT = "<b>Brush size/border:</b>";
 const char *PALETTE_TEXT = "<b>Palette:</b>";
@@ -22,7 +19,7 @@ const char *IMPORT_TEXT = "Import image";
 const char *EXPORT_TEXT = "Export to image";
 const char *CLEAR_CANVAS_TEXT = "Clear the canvas";
 
-const char *LAYERS_TITLE = "<b>Layers (Z-Index):</b>";
+const char *LAYERS_TITLE = "Layers (Z-Index)";
 const char *LAYER_NAME_1 = "Layer 1 (Bottom)";
 const char *LAYER_NAME_2 = "Layer 2 (Middle)";
 const char *LAYER_NAME_3 = "Layer 3 (Top)";

@@ -12,9 +12,6 @@ namespace Strings
 
 extern const char *APPLICATION_NAME;
 
-extern const char *UNDO_TEXT;
-extern const char *REDO_TEXT;
-
 extern const char *TOOL_TEXT;
 extern const char *BRUSH_SIZE_TEXT;
 extern const char *PALETTE_TEXT;

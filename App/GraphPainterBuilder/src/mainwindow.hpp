@@ -4,8 +4,10 @@
 #include "core.hpp"
 #include "iscenelistener.hpp"
 #include "graphicsview.hpp"
+#include "layerswidget.hpp"
 
 #include <QDateTime>
+#include <QDockWidget>
 #include <QListWidget>
 #include <QPushButton>
 #include <QUndoStack>
@@ -43,13 +45,13 @@ private:
 private:
 
     Ui::MainWindow *ui;
-    GraphicsView *m_view;   //!Представление
+    GraphicsView *m_view;   //!< Представление
     QLabel *m_statusLabel;
 
-    QListWidget *m_layersList; //Слои
-    QPushButton *m_colorButton;
+    QDockWidget *m_toolDockWidget;   //!< Инструменты
+    LayersWidget *m_layersWidget;    //!< Слои;
 
-    int m_nextLayerZ;
+    QPushButton *m_colorButton;
 
     Core *m_core;
 

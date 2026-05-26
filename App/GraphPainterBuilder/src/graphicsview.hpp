@@ -23,6 +23,9 @@ public Q_SLOTS:
     void undo();
     void redo();
 
+    void setCurrentLayerZ(int newCurrentLayerZ);
+    void clearLayer(int layerZ);
+
 public:
     void addSceneListener(ISceneListener* listener);
     void removeSceneListener(ISceneListener* listener);
@@ -31,7 +34,6 @@ public:
     bool save(const QString &filePath);
 
     int currentLayerZ() const;
-    void setCurrentLayerZ(int newCurrentLayerZ);
 
     QString currentTool() const;
     void setCurrentTool(const QString &newCurrentTool);
@@ -42,7 +44,6 @@ public:
     QColor currentColor() const;
     void setCurrentColor(const QColor &newCurrentColor);
 
-    void clearLayer(int layerZ);
     void clear();
 
     bool isSceneEmpty() const;
