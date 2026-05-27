@@ -53,6 +53,8 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionClear_canvas"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -79,11 +81,17 @@
    </property>
   </action>
   <action name="actionToolPanel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Tool panel</string>
    </property>
   </action>
   <action name="actionLayer_panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Layer panel</string>
    </property>
@@ -107,6 +115,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionClear_canvas">
+   <property name="text">
+    <string>Clear canvas</string>
    </property>
   </action>
  </widget>

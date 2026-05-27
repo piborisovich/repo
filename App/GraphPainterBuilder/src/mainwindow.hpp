@@ -5,6 +5,7 @@
 #include "iscenelistener.hpp"
 #include "graphicsview.hpp"
 #include "layerswidget.hpp"
+#include "toolswidget.hpp"
 
 #include <QDateTime>
 #include <QDockWidget>
@@ -33,6 +34,12 @@ public:
     MainWindow(Core *core, QWidget *parent = nullptr);
     ~MainWindow();
 
+private Q_SLOTS:
+    void on_imageImportTriggered();   //!< Импорт
+    void on_exportToImageTriggered(); //!< Экспорт
+    void on_clearCanvasTriggered();   //!< Очистить сцену
+    void on_currentToolChanged(const QString &tool);
+
 private:
     void init();
 
@@ -40,18 +47,14 @@ private:
     void mouseReleased(Qt::MouseButton button, const QPointF &scenePos) override;
     void mouseMoved(const QPointF &scenePos) override;
 
-    void updateColorButtonLayout(QColor color);
-
 private:
 
     Ui::MainWindow *ui;
     GraphicsView *m_view;   //!< Представление
     QLabel *m_statusLabel;
 
-    QDockWidget *m_toolDockWidget;   //!< Инструменты
+    ToolsWidget *m_toolsWidget;   //!< Инструменты
     LayersWidget *m_layersWidget;    //!< Слои;
-
-    QPushButton *m_colorButton;
 
     Core *m_core;
 

@@ -26,6 +26,9 @@ public Q_SLOTS:
     void setCurrentLayerZ(int newCurrentLayerZ);
     void clearLayer(int layerZ);
 
+    void setBrushSize(int newBrushSize);
+    void setCurrentColor(const QColor &newCurrentColor);
+
 public:
     void addSceneListener(ISceneListener* listener);
     void removeSceneListener(ISceneListener* listener);
@@ -39,10 +42,8 @@ public:
     void setCurrentTool(const QString &newCurrentTool);
 
     int brushSize() const;
-    void setBrushSize(int newBrushSize);
 
     QColor currentColor() const;
-    void setCurrentColor(const QColor &newCurrentColor);
 
     void clear();
 
