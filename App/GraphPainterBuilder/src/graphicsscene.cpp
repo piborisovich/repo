@@ -1,5 +1,6 @@
 #include "graphicsscene.hpp"
 #include "commands.hpp"
+#include "itool.hpp"
 
 #include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
@@ -7,10 +8,10 @@
 
 const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(QColor(255, 255, 255));
 
-GraphicsScene::GraphicsScene(QUndoStack *undoStack, QObject *parent) : QGraphicsScene(parent)
+GraphicsScene::GraphicsScene(std::shared_ptr<QUndoStack> undoStack, QObject *parent) : QGraphicsScene(parent)
     , m_currentLayerZ(20)
-    , m_brushSize(5)
     , m_currentColor(Qt::black)
+    , m_currentTool(nullptr)
     , m_undoStack(undoStack)
 {
     setBackgroundBrush(BACKGROUND_BRUSH);
@@ -37,25 +38,8 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         listener->mousePressed( event->button(), pos );
     }
 
-    if ( event->button() == Qt::LeftButton ) {
-        m_startPoint = pos;
-        m_erasedItemsThisStroke.clear();
-
-        if (m_currentTool == "Line") {
-
-            QPen pen(m_currentColor,
-                     m_brushSize,
-                     Qt::SolidLine,
-                     Qt::RoundCap,
-                     Qt::RoundJoin);
-
-            m_previewLine = new QGraphicsLineItem(QLineF(m_startPoint, m_startPoint));
-            m_previewLine->setPen(pen);
-            m_previewLine->setZValue(m_currentLayerZ);
-            addItem(m_previewLine); // Временно добавляем для предпросмотра
-        } else {
-            processDrawing(event->scenePos());
-        }
+    if ( m_currentTool ) {
+        m_currentTool->handleMousePress( event->button(), pos );
     }
 
     QGraphicsScene::mousePressEvent(event);
@@ -63,16 +47,14 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    auto pos = event->scenePos();
+
     foreach (auto *listener, m_listeners) {
-        listener->mouseMoved( event->scenePos() );
+        listener->mouseMoved( pos );
     }
 
-    if ( event->buttons() & Qt::LeftButton ) {
-        if ( m_currentTool == "Line" && m_previewLine ) {
-            m_previewLine->setLine( QLineF (m_startPoint, event->scenePos() ) );
-        } else if (m_currentTool == "Brush" || m_currentTool == "Eraser") {
-            processDrawing(event->scenePos());
-        }
+    if ( m_currentTool ) {
+        m_currentTool->handleMouseMove( event->buttons(), pos );
     }
 
     QGraphicsScene::mouseMoveEvent(event);
@@ -80,77 +62,17 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    auto pos = event->scenePos();
+
     foreach (auto *listener, m_listeners) {
-        listener->mouseReleased( event->button(), event->scenePos() );
+        listener->mouseReleased( event->button(), pos );
     }
 
-    if ( event->button() == Qt::LeftButton ) {
-        if (m_currentTool == "Line" && m_previewLine) {
-            // Передаем созданную линию под управление UndoStack
-            removeItem(m_previewLine);
-            m_undoStack->push( new Commands::AddItemCommand( this, m_previewLine) );
-            m_previewLine = nullptr;
-        }
-        else if (m_currentTool == "Eraser" && !m_erasedItemsThisStroke.isEmpty()) {
-            // Записываем все удаленные за один проход элементы в одну Undo-команду
-            m_undoStack->push(new Commands::MacroDeleteCommand(this, m_erasedItemsThisStroke));
-            m_erasedItemsThisStroke.clear();
-        }
+    if ( m_currentTool ) {
+        m_currentTool->handleMouseRelease( event->button(), pos );
     }
 
     QGraphicsScene::mouseReleaseEvent(event);
-}
-
-void GraphicsScene::processDrawing(QPointF pos)
-{
-    if (m_currentTool == "Eraser") {
-        QList<QGraphicsItem*> itemsAtPos = items( QRectF( pos.x() - m_brushSize/2.0,
-                                                 pos.y() - m_brushSize/2.0,
-                                                 m_brushSize,
-                                                 m_brushSize ) );
-
-        for (QGraphicsItem *item : itemsAtPos) {
-            if ( item->zValue() == m_currentLayerZ && !m_erasedItemsThisStroke.contains(item) && item != m_previewLine) {
-                removeItem(item); // Убираем со сцены визуально
-                m_erasedItemsThisStroke.append(item); // Запоминаем для Undo
-            }
-        }
-        return;
-    }
-
-    QPen pen(m_currentColor,
-             m_brushSize,
-             Qt::SolidLine,
-             Qt::RoundCap,
-             Qt::RoundJoin);
-
-    QBrush brush(m_currentColor);
-
-    QGraphicsItem *newItem = nullptr;
-
-    if ( m_currentTool == "Brush") {
-        newItem = new QGraphicsEllipseItem(pos.x() - m_brushSize/2.0,
-                                           pos.y() - m_brushSize/2.0,
-                                           m_brushSize,
-                                           m_brushSize);
-
-        static_cast<QGraphicsEllipseItem*>(newItem)->setPen(Qt::NoPen);
-        static_cast<QGraphicsEllipseItem*>(newItem)->setBrush(brush);
-    }
-    else if (m_currentTool == "Rectangle") {
-        newItem = new QGraphicsRectItem(pos.x() - 25, pos.y() - 25, 50, 50);
-        static_cast<QGraphicsRectItem*>(newItem)->setPen(pen);
-    }
-    else if (m_currentTool == "Circle") {
-        newItem = new QGraphicsEllipseItem(pos.x() - 25, pos.y() - 25, 50, 50);
-        static_cast<QGraphicsEllipseItem*>(newItem)->setPen(pen);
-    }
-
-    if (newItem) {
-        newItem->setZValue(m_currentLayerZ);
-        // Регистрируем создание объекта в системе Undo/Redo
-        m_undoStack->push(new Commands::AddItemCommand(this, newItem));
-    }
 }
 
 QColor GraphicsScene::currentColor() const
@@ -163,37 +85,42 @@ void GraphicsScene::setCurrentColor(const QColor &newCurrentColor)
     m_currentColor = newCurrentColor;
 }
 
-int GraphicsScene::brushSize() const
+void GraphicsScene::addSceneCommand(QUndoCommand *command)
 {
-    return m_brushSize;
+    if ( m_undoStack && command ) {
+        m_undoStack->push( command );
+    }
 }
 
-void GraphicsScene::setBrushSize(int newBrushSize)
+void GraphicsScene::changeCurrentTool(ITool* tool)
 {
-    m_brushSize = newBrushSize;
-}
-
-QString GraphicsScene::currentTool() const
-{
-    return m_currentTool;
-}
-
-void GraphicsScene::setCurrentTool(const QString &newCurrentTool)
-{
-    m_currentTool = newCurrentTool;
-
-    QList<QGraphicsItem*> allItems = items();
-
-    if ( newCurrentTool == "Select") {
-        for (QGraphicsItem *item : allItems) {
-            item->setFlag(QGraphicsItem::ItemIsSelectable);
-            item->setFlag(QGraphicsItem::ItemIsMovable);
+    if ( tool != m_currentTool ) {
+        m_currentTool = tool;
+        auto sts = tool->settings();
+        for ( auto* view : views() ) {
+            if ( tool ) {
+                view->setCursor(tool->getCursor());
+                view->setDragMode( sts->dragMode() );
+            } else {
+                view->setCursor( QCursor() );
+                view->setDragMode( QGraphicsView::NoDrag );
+            }
         }
-    } else {
+
+        auto allItems = items();
+
         for (QGraphicsItem *item : allItems) {
-            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
-            item->setFlag(QGraphicsItem::ItemIsMovable, false);
-            item->setSelected(false);
+            if ( tool ) {
+                item->setFlag(QGraphicsItem::ItemIsSelectable, sts->selectable());
+                item->setFlag(QGraphicsItem::ItemIsMovable, sts->movable());
+            } else {
+                item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+                item->setFlag(QGraphicsItem::ItemIsMovable, false);
+            }
+
+            if ( (item->flags() & QGraphicsItem::ItemIsSelectable) == 0 ) {
+                item->setSelected(false);
+            }
         }
     }
 }
@@ -213,7 +140,6 @@ void GraphicsScene::addImage(const QString &path, QSize &imageSize)
         imageSize = pixmap.size();
         newItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
         m_undoStack->push(new Commands::AddItemCommand(this, newItem));
-
     }
 
 }

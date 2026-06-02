@@ -4,7 +4,7 @@
 static const QRectF DEFAULT_SCENE_RECT( QPointF(0,0), QSizeF(800, 600) );
 
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
-    , m_undoStack( new QUndoStack(this) )
+    , m_undoStack( new QUndoStack() )
     , m_scene( new GraphicsScene(m_undoStack, this) )
 {
     setScene(m_scene);
@@ -13,13 +13,13 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
     setSceneRect( DEFAULT_SCENE_RECT );
     setRenderHint( QPainter::Antialiasing );
 
-    auto result = connect(m_undoStack,
+    auto result = connect(m_undoStack.get(),
                           &QUndoStack::canUndoChanged,
                           this,
                           &GraphicsView::canUndoChanged);
     Q_ASSERT(result);
 
-    result = connect(m_undoStack,
+    result = connect(m_undoStack.get(),
                      &QUndoStack::canRedoChanged,
                      this,
                      &GraphicsView::canRedoChanged);
@@ -73,26 +73,6 @@ int GraphicsView::currentLayerZ() const
 void GraphicsView::setCurrentLayerZ(int newCurrentLayerZ)
 {
     m_scene->setCurrentLayerZ(newCurrentLayerZ);
-}
-
-QString GraphicsView::currentTool() const
-{
-    return m_scene->currentTool();
-}
-
-void GraphicsView::setCurrentTool(const QString &newCurrentTool)
-{
-    m_scene->setCurrentTool(newCurrentTool);
-}
-
-int GraphicsView::brushSize() const
-{
-    return m_scene->brushSize();
-}
-
-void GraphicsView::setBrushSize(int newBrushSize)
-{
-    m_scene->setBrushSize(newBrushSize);
 }
 
 QColor GraphicsView::currentColor() const

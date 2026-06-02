@@ -26,7 +26,6 @@ public Q_SLOTS:
     void setCurrentLayerZ(int newCurrentLayerZ);
     void clearLayer(int layerZ);
 
-    void setBrushSize(int newBrushSize);
     void setCurrentColor(const QColor &newCurrentColor);
 
 public:
@@ -38,11 +37,6 @@ public:
 
     int currentLayerZ() const;
 
-    QString currentTool() const;
-    void setCurrentTool(const QString &newCurrentTool);
-
-    int brushSize() const;
-
     QColor currentColor() const;
 
     void clear();
@@ -53,7 +47,7 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
 
 private:
-    QUndoStack *m_undoStack; //!< Стек команд для отмены
+    std::shared_ptr<QUndoStack> m_undoStack; //!< Стек команд для отмены
     GraphicsScene *m_scene;  //!< Сцена
 };
 

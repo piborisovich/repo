@@ -5,6 +5,7 @@ include($$PWD/tools/tools.pri)
 
 HEADERS += \
            $$PWD/commands.hpp \
+           $$PWD/flowlayout.hpp \
            $$PWD/graphicsview.hpp \
            $$PWD/core.hpp \
            $$PWD/layerswidget.hpp \
@@ -14,6 +15,7 @@ HEADERS += \
 SOURCES += \
            $$PWD/commands.cpp \
            $$PWD/core.cpp \
+           $$PWD/flowlayout.cpp \
            $$PWD/graphicsview.cpp \
            $$PWD/layerswidget.cpp \
            $$PWD/main.cpp \

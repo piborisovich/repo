@@ -12,7 +12,6 @@ namespace Strings
 const char *APPLICATION_NAME = "Graph Painter Builder";
 
 const char *TOOLS_TEXT = "Tools";
-const char *TOOL_TEXT = "<b>Tool:</b>";
 const char *BRUSH_SIZE_TEXT = "<b>Brush size/border:</b>";
 const char *PALETTE_TEXT = "<b>Palette:</b>";
 

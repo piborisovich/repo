@@ -6,7 +6,7 @@
 #include "toollist.hpp"
 
 #include <QApplication>
-#include <QUndoStack>
+#include <QGraphicsScene>
 
 class Core : public QApplication
 {
@@ -18,6 +18,7 @@ public:
     ~Core();
 
     static const ToolList &tools();
+    static void changeSceneForTools(QGraphicsScene *scene);
 
 private:
     Q_DISABLE_COPY(Core)

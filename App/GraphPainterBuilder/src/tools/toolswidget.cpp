@@ -1,5 +1,8 @@
 #include "toolswidget.hpp"
 
+#include "toolwidget.hpp"
+
+
 #include "strings.hpp"
 
 #include <QLabel>
@@ -7,54 +10,51 @@
 #include <QColorDialog>
 #include <QComboBox>
 
-ToolsWidget::ToolsWidget(const QString &title, const TColorGetter &colorGetter,
+ToolsWidget::ToolsWidget(const QString &title,
+                         const TColorGetter &colorGetter,
+                         const ToolList &toolList,
                          QWidget *parent,
                          Qt::WindowFlags flags) : QDockWidget(title, parent, flags)
     , m_colorButton(new QPushButton())
+    , m_settingsWidgetLayout(new QVBoxLayout())
     , m_colorGetter(colorGetter)
 {
     QWidget *contentWidget = new QWidget(this);
-    QVBoxLayout *widgetLayout = new QVBoxLayout(contentWidget);
+    QVBoxLayout* widgetLayout = new QVBoxLayout(contentWidget);
+    ToolWidget* toolWidget = new ToolWidget(toolList, this);
 
-    // Выбор инструмента
-    widgetLayout->addWidget( new QLabel(Strings::TOOL_TEXT) );
-    QComboBox *toolBox = new QComboBox();
-    toolBox->addItems( {"Select", "Drag", "Brush", "Eraser", "Line", "Rectangle", "Circle"} );
-    widgetLayout->addWidget(toolBox);
+    widgetLayout->setContentsMargins(5, 0, 0, 0);
 
-    // Настройка размера
-    widgetLayout->addWidget(new QLabel(Strings::BRUSH_SIZE_TEXT));
-    QSlider *sizeSlider = new QSlider(Qt::Horizontal);
-    sizeSlider->setRange(1, 100);
-    sizeSlider->setValue(5);
-    widgetLayout->addWidget(sizeSlider);
+    widgetLayout->addWidget( toolWidget );
 
     // Выбор цвета
     widgetLayout->addWidget(new QLabel(Strings::PALETTE_TEXT));
     updateColorButtonLayout(Qt::black);
     widgetLayout->addWidget(m_colorButton);
 
-    // Экспорт холста в файл
-    widgetLayout->addSpacing(15);
-
-    // Кнопка полной очистки холста
     widgetLayout->addSpacing(10);
+    widgetLayout->addLayout(m_settingsWidgetLayout);
 
     widgetLayout->addStretch();
 
     setWidget(contentWidget);
 
-
-    auto result = connect(toolBox,
-                          &QComboBox::currentTextChanged,
+    auto result = connect(toolWidget,
+                          &ToolWidget::toolSelected,
                           this,
                           &ToolsWidget::currentToolChanged);
     Q_ASSERT(result);
 
-    result = connect(sizeSlider,
-                     &QSlider::valueChanged,
+    result = connect(toolWidget,
+                     &ToolWidget::toolSelected,
                      this,
-                     &ToolsWidget::brushSizeChanged);
+                     &ToolsWidget::on_currentToolChanged);
+    Q_ASSERT(result);
+
+    result = connect(toolWidget,
+                     &ToolWidget::toolDisabled,
+                     this,
+                     &ToolsWidget::on_toolDisabled);
     Q_ASSERT(result);
 
     result = connect(m_colorButton,
@@ -77,6 +77,22 @@ void ToolsWidget::on_colorClicked()
         }
     } catch (std::bad_function_call &ex) {
         qDebug() << ex.what();
+    }
+}
+
+void ToolsWidget::on_currentToolChanged(ITool &tool)
+{
+    on_toolDisabled();
+    m_settingsWidgetLayout->addWidget(tool.settingsWidget());
+}
+
+void ToolsWidget::on_toolDisabled()
+{
+    QLayoutItem* layoutItem;
+    while ( ( layoutItem = m_settingsWidgetLayout->takeAt(0) ) != nullptr )
+    {
+        layoutItem->widget()->setParent(nullptr);
+        delete layoutItem;
     }
 }
 

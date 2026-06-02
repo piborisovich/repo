@@ -38,7 +38,6 @@ private Q_SLOTS:
     void on_imageImportTriggered();   //!< Импорт
     void on_exportToImageTriggered(); //!< Экспорт
     void on_clearCanvasTriggered();   //!< Очистить сцену
-    void on_currentToolChanged(const QString &tool);
 
 private:
     void init();
@@ -50,13 +49,12 @@ private:
 private:
 
     Ui::MainWindow *ui;
+    Core *m_core;
+
     GraphicsView *m_view;   //!< Представление
     QLabel *m_statusLabel;
 
     ToolsWidget *m_toolsWidget;   //!< Инструменты
     LayersWidget *m_layersWidget;    //!< Слои;
-
-    Core *m_core;
-
 };
 #endif // MAINWINDOW_HPP

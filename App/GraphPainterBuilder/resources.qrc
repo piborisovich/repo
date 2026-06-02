@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="brush.png">pictures/brush.png</file>
+        <file alias="select.png">pictures/select.png</file>
+        <file alias="drag.png">pictures/drag.png</file>
+        <file alias="eraser.png">pictures/eraser.png</file>
+        <file alias="circle.png">pictures/circle.png</file>
+        <file alias="rectangle.png">pictures/rectangle.png</file>
+        <file alias="line.png">pictures/line.png</file>
+    </qresource>
+</RCC>

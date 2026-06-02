@@ -8,6 +8,8 @@
 #include <QUndoStack>
 #include <QList>
 
+class ITool;
+
 /*!
  * \brief Сцена
  */
@@ -15,16 +17,17 @@ class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GraphicsScene(QUndoStack *undoStack = nullptr, QObject *parent = nullptr);
 
+    GraphicsScene(std::shared_ptr<QUndoStack> undoStack, QObject *parent = nullptr);
+
+public:
     void addSceneListener(ISceneListener* listener);
     void removeSceneListener(ISceneListener* listener);
 
     int currentLayerZ() const;
     void setCurrentLayerZ(int newCurrentLayerZ);
 
-    QString currentTool() const;
-    void setCurrentTool(const QString &newCurrentTool);
+    void changeCurrentTool(ITool *tool);
     /*!
      * \brief addImage
      * \param path - Image path
@@ -32,19 +35,19 @@ public:
      */
     void addImage(const QString &path, QSize &imageSize);
 
-    int brushSize() const;
-    void setBrushSize(int newBrushSize);
-
     QColor currentColor() const;
     void setCurrentColor(const QColor &newCurrentColor);
+
+    /*!
+     * \brief add Item to scene and create undo command
+     * \param command
+     */
+    void addSceneCommand(QUndoCommand *command);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-
-private:
-    void processDrawing(QPointF pos);
 
 private:
 
@@ -58,15 +61,12 @@ private:
     static const QBrush BACKGROUND_BRUSH;
 
     int m_currentLayerZ;
-    int m_brushSize;
+
     QColor m_currentColor;
-    QString m_currentTool;
-    QUndoStack *m_undoStack;
 
+    ITool* m_currentTool;
 
-    QPointF m_startPoint;
-    QGraphicsLineItem *m_previewLine = nullptr;
-    QList<QGraphicsItem*> m_erasedItemsThisStroke; //!< Для группировки удаления ластиком
+    std::shared_ptr<QUndoStack> m_undoStack;
 
     QList<ISceneListener*> m_listeners;
 };

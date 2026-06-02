@@ -14,11 +14,11 @@ static const int DEFAULT_LAYER_Z = 20;
 MainWindow::MainWindow(Core *core, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_view(new GraphicsView(this))
-    , m_statusLabel(new QLabel("", this))
-    , m_toolsWidget(new ToolsWidget(Strings::TOOLS_TEXT, std::bind(&GraphicsView::currentColor, m_view ), this))
-    , m_layersWidget(new LayersWidget(Strings::LAYERS_TITLE, this))
     , m_core(core)
+    , m_view( new GraphicsView(this) )
+    , m_statusLabel( new QLabel("", this))
+    , m_toolsWidget( new ToolsWidget(Strings::TOOLS_TEXT, std::bind(&GraphicsView::currentColor, m_view ), core->tools(), this) )
+    , m_layersWidget( new LayersWidget(Strings::LAYERS_TITLE, this ) )
 {
     ui->setupUi(this);
     m_view->addSceneListener(this);
@@ -76,19 +76,6 @@ void MainWindow::on_clearCanvasTriggered()
     }
 }
 
-void MainWindow::on_currentToolChanged(const QString &tool)
-{
-    m_view->setCurrentTool(tool);
-
-    if ( tool == "Select") {
-        m_view->setDragMode(QGraphicsView::RubberBandDrag);
-    } else if ( tool == "Drag") {
-        m_view->setDragMode(QGraphicsView::ScrollHandDrag);
-    } else {
-        m_view->setDragMode(QGraphicsView::NoDrag);
-    }
-}
-
 void MainWindow::init()
 {
     setWindowTitle( Core::applicationName() );
@@ -101,9 +88,8 @@ void MainWindow::init()
     addDockWidget(Qt::RightDockWidgetArea, m_layersWidget);
 
 
-
     m_view->setCurrentLayerZ(DEFAULT_LAYER_Z);
-    m_view->setCurrentTool("Select");
+   // m_view->setCurrentTool("Select");
 
 
     // --- ГЛАВНАЯ КОМПОНОВКА ---
@@ -204,24 +190,14 @@ void MainWindow::init()
     Q_ASSERT(result);
 
     result = connect(m_toolsWidget,
-                     &ToolsWidget::currentToolChanged,
-                     this,
-                     &MainWindow::on_currentToolChanged);
-    Q_ASSERT(result);
-
-    result = connect(m_toolsWidget,
-                     &ToolsWidget::brushSizeChanged,
-                     m_view,
-                     &GraphicsView::setBrushSize);
-    Q_ASSERT(result);
-
-    result = connect(m_toolsWidget,
                      &ToolsWidget::colorChanged,
                      m_view,
                      &GraphicsView::setCurrentColor);
     Q_ASSERT(result);
 
     ui->actionLayer_panel->setChecked(true);
+
+    m_core->changeSceneForTools( m_view->scene() );
 }
 
 void MainWindow::mousePressed(Qt::MouseButton button, const QPointF &scenePos)
