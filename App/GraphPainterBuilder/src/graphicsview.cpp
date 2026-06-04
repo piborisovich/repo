@@ -1,5 +1,7 @@
 #include "graphicsview.hpp"
 
+#include <QScrollBar>
+#include <QWheelEvent>
 
 static const QRectF DEFAULT_SCENE_RECT( QPointF(0,0), QSizeF(800, 600) );
 
@@ -110,5 +112,37 @@ bool GraphicsView::isSceneEmpty() const
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
+    if ( event->modifiers() == Qt::ControlModifier ) {
+        if ( event->angleDelta().y() > 0 ) {
+            scale(1.25, 1.25);
+        } else {
+            scale(0.8, 0.8);
+        }
+    }
     QGraphicsView::wheelEvent(event);
+}
+
+void GraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    if ( event->button() == Qt::MiddleButton ) {
+        m_origin = event->pos();
+    }
+    QGraphicsView::mousePressEvent(event);
+}
+
+void GraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    if ( event->buttons() & Qt::MiddleButton ) {
+        const QPointF move = m_origin - event->pos(); // The move
+        horizontalScrollBar()->setValue(move.x() + horizontalScrollBar()->value());
+        verticalScrollBar()->setValue(move.y() + verticalScrollBar()->value());
+
+        m_origin = event->pos();
+    }
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseReleaseEvent(event);
 }

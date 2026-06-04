@@ -7,5 +7,6 @@
         <file alias="circle.png">pictures/circle.png</file>
         <file alias="rectangle.png">pictures/rectangle.png</file>
         <file alias="line.png">pictures/line.png</file>
+        <file alias="graph.png">pictures/graph.png</file>
     </qresource>
 </RCC>

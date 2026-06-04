@@ -15,7 +15,8 @@ public:
         ERASE_TOOL,
         LINE_TOOL,
         RECTANGLE_TOOL,
-        CIRCLE_TOOL
+        CIRCLE_TOOL,
+        GRAPH_TOOL
     };
 
 

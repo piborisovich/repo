@@ -45,10 +45,14 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
     std::shared_ptr<QUndoStack> m_undoStack; //!< Стек команд для отмены
-    GraphicsScene *m_scene;  //!< Сцена
+    GraphicsScene *m_scene;         //!< Сцена
+    QPoint m_origin;
 };
 
 #endif // GRAPHICSVIEW_HPP

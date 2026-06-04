@@ -7,6 +7,7 @@
 #include "linetool.hpp"
 #include "rectangletool.hpp"
 #include "circletool.hpp"
+#include "graphtool.hpp"
 
 
 ITool *ToolCreator::create(ToolTypes toolType)
@@ -19,6 +20,7 @@ ITool *ToolCreator::create(ToolTypes toolType)
     case ToolTypes::LINE_TOOL: return new LineTool();
     case ToolTypes::RECTANGLE_TOOL: return new RectangleTool();
     case ToolTypes::CIRCLE_TOOL: return new CircleTool();
+    case ToolTypes::GRAPH_TOOL: return new GraphTool();
         default:;
     }
     return nullptr;

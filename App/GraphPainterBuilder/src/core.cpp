@@ -18,7 +18,8 @@ Core::Core(int &argc, char **argv) : QApplication(argc, argv)
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::ERASE_TOOL) ),
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::LINE_TOOL) ),
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::RECTANGLE_TOOL) ),
-        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::CIRCLE_TOOL) )
+        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::CIRCLE_TOOL) ),
+        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::GRAPH_TOOL) )
     };
 }
 

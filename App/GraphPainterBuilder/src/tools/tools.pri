@@ -4,6 +4,8 @@ include($$PWD/gui/gui.pri)
 
 HEADERS += \
     $$PWD/dragtool.hpp \
+    $$PWD/graphtool.hpp \
+    $$PWD/graphtoolsettings.hpp \
     $$PWD/selecttool.hpp \
     $$PWD/tool.hpp \
     $$PWD/brushtool.hpp \
@@ -18,6 +20,8 @@ HEADERS += \
     $$PWD/toolwidget.hpp
 SOURCES += \
     $$PWD/dragtool.cpp \
+    $$PWD/graphtool.cpp \
+    $$PWD/graphtoolsettings.cpp \
     $$PWD/selecttool.cpp \
     $$PWD/tool.cpp \
     $$PWD/brushtool.cpp \

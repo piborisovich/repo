@@ -24,6 +24,9 @@ public:
     bool selectable() const;
     void setSelectable(bool newIsSelectable);
 
+
+    virtual ~ToolSettings() {}
+
 private:
     int m_brushSize;
     QGraphicsView::DragMode m_dragMode;

@@ -96,9 +96,10 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
 {
     if ( tool != m_currentTool ) {
         m_currentTool = tool;
-        auto sts = tool->settings();
+
         for ( auto* view : views() ) {
             if ( tool ) {
+                auto sts = tool->settings();
                 view->setCursor(tool->getCursor());
                 view->setDragMode( sts->dragMode() );
             } else {
@@ -111,6 +112,7 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
 
         for (QGraphicsItem *item : allItems) {
             if ( tool ) {
+                auto sts = tool->settings();
                 item->setFlag(QGraphicsItem::ItemIsSelectable, sts->selectable());
                 item->setFlag(QGraphicsItem::ItemIsMovable, sts->movable());
             } else {
