@@ -1,13 +1,16 @@
 #include "graphtoolsettings.hpp"
 
-GraphToolSettings::GraphToolSettings() : ToolSettings() {}
-
-size_t GraphToolSettings::pointCount() const
+GraphToolSettings::GraphToolSettings() : ToolSettings()
+    , m_pointsCount(100)
 {
-    return m_pointCount;
 }
 
-void GraphToolSettings::setPointCount(size_t newPointCount)
+int GraphToolSettings::pointsCount() const
 {
-    m_pointCount = newPointCount;
+    return m_pointsCount;
+}
+
+void GraphToolSettings::setPointsCount(int newPointsCount)
+{
+    m_pointsCount = newPointsCount;
 }

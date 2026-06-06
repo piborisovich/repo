@@ -22,16 +22,18 @@ public:
                          Qt::WindowFlags flags = Qt::WindowFlags());
 
 Q_SIGNALS:
-    void currentToolChanged(ITool& tool);
-    void colorChanged(const QColor &color);
+    void colorPickerClicked(const QColor &color);
+
+public Q_SLOTS:
+    /*!
+     * \brief Обновить отображаемый цвет
+     */
+    void updateColor(QColor color);
 
 private Q_SLOTS:
     void on_colorClicked();
     void on_currentToolChanged(ITool& tool);
     void on_toolDisabled();
-
-private:
-    void updateColorButtonLayout(QColor color);
 
 private:
     QPushButton *m_colorButton;

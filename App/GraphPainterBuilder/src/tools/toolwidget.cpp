@@ -9,19 +9,20 @@ ToolWidget::ToolWidget(const ToolList &tools,
     FlowLayout* flowLayout = new FlowLayout(this, 0, 5, 5);
 
     for (const auto &tool : m_toollist) {
+        if ( tool ) {
+            auto *button = tool->button();
 
-        auto *button = tool->button();
+            if ( button ) {
+                auto result = connect(button,
+                                      &QToolButton::clicked,
+                                      this,
+                                      &ToolWidget::on_toolButtonClicked);
+                Q_ASSERT(result);
 
-        if ( button ) {
-            auto result = connect(button,
-                                  &QToolButton::clicked,
-                                  this,
-                                  &ToolWidget::on_toolButtonClicked);
-            Q_ASSERT(result);
-
-            flowLayout->addWidget(button);
+                flowLayout->addWidget(button);
+            }
+            m_buttonToolMap.insert(button, tool.get());
         }
-        m_buttonToolMap.insert(button, tool.get());
     }
 
     setLayout(flowLayout);

@@ -4,16 +4,21 @@
 #include <QWheelEvent>
 
 static const QRectF DEFAULT_SCENE_RECT( QPointF(0,0), QSizeF(800, 600) );
+static const qreal DEFAULT_SCALE_CHANGED_STEP_UP = 1.25;
+static const qreal DEFAULT_SCALE_CHANGED_STEP_DOWN = 0.8;
 
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
     , m_undoStack( new QUndoStack() )
     , m_scene( new GraphicsScene(m_undoStack, this) )
+    , m_scale(1.0)
 {
     setScene(m_scene);
     setMouseTracking(true);
     setUpdatesEnabled(true);
     setSceneRect( DEFAULT_SCENE_RECT );
     setRenderHint( QPainter::Antialiasing );
+
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     auto result = connect(m_undoStack.get(),
                           &QUndoStack::canUndoChanged,
@@ -55,8 +60,7 @@ void GraphicsView::addImage(const QString &path, QSize &imageSize)
 
 bool GraphicsView::save(const QString &filePath)
 {
-    QRectF sceneRect = m_scene->sceneRect();
-    QImage image(sceneRect.size().toSize(), QImage::Format_ARGB32);
+    QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
     image.fill(filePath.endsWith(".png", Qt::CaseInsensitive) ? Qt::transparent : Qt::white);
 
     QPainter painter(&image);
@@ -77,14 +81,14 @@ void GraphicsView::setCurrentLayerZ(int newCurrentLayerZ)
     m_scene->setCurrentLayerZ(newCurrentLayerZ);
 }
 
+void GraphicsView::setCurrentrColor(const QColor &color)
+{
+    m_scene->setCurrentColor(color);
+}
+
 QColor GraphicsView::currentColor() const
 {
     return m_scene->currentColor();
-}
-
-void GraphicsView::setCurrentColor(const QColor &newCurrentColor)
-{
-    m_scene->setCurrentColor(newCurrentColor);
 }
 
 void GraphicsView::clearLayer(int layerZ)
@@ -113,11 +117,23 @@ bool GraphicsView::isSceneEmpty() const
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
     if ( event->modifiers() == Qt::ControlModifier ) {
+
+        QPointF scenePos = mapToScene(event->position().toPoint());
+
         if ( event->angleDelta().y() > 0 ) {
-            scale(1.25, 1.25);
+            m_scale *= DEFAULT_SCALE_CHANGED_STEP_UP;
+            scale(DEFAULT_SCALE_CHANGED_STEP_UP,
+                  DEFAULT_SCALE_CHANGED_STEP_UP);
         } else {
-            scale(0.8, 0.8);
+            m_scale *= DEFAULT_SCALE_CHANGED_STEP_DOWN;
+            scale(DEFAULT_SCALE_CHANGED_STEP_DOWN,
+                  DEFAULT_SCALE_CHANGED_STEP_DOWN);
         }
+
+        setTransformationAnchor(GraphicsView::AnchorUnderMouse);
+        centerOn(scenePos);
+
+        emit scaleChanged(m_scale);
     }
     QGraphicsView::wheelEvent(event);
 }

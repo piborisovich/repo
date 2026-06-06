@@ -18,15 +18,15 @@ public:
 Q_SIGNALS:
     void canUndoChanged(bool canUndo);
     void canRedoChanged(bool canRedo);
+    void scaleChanged(qreal scale);
 
 public Q_SLOTS:
     void undo();
     void redo();
 
     void setCurrentLayerZ(int newCurrentLayerZ);
+    void setCurrentrColor(const QColor &color);
     void clearLayer(int layerZ);
-
-    void setCurrentColor(const QColor &newCurrentColor);
 
 public:
     void addSceneListener(ISceneListener* listener);
@@ -53,6 +53,8 @@ private:
     std::shared_ptr<QUndoStack> m_undoStack; //!< Стек команд для отмены
     GraphicsScene *m_scene;         //!< Сцена
     QPoint m_origin;
+
+    qreal m_scale;
 };
 
 #endif // GRAPHICSVIEW_HPP

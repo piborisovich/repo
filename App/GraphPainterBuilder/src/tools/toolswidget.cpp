@@ -29,7 +29,7 @@ ToolsWidget::ToolsWidget(const QString &title,
 
     // Выбор цвета
     widgetLayout->addWidget(new QLabel(Strings::PALETTE_TEXT));
-    updateColorButtonLayout(Qt::black);
+    updateColor(Qt::black);
     widgetLayout->addWidget(m_colorButton);
 
     widgetLayout->addSpacing(10);
@@ -40,12 +40,6 @@ ToolsWidget::ToolsWidget(const QString &title,
     setWidget(contentWidget);
 
     auto result = connect(toolWidget,
-                          &ToolWidget::toolSelected,
-                          this,
-                          &ToolsWidget::currentToolChanged);
-    Q_ASSERT(result);
-
-    result = connect(toolWidget,
                      &ToolWidget::toolSelected,
                      this,
                      &ToolsWidget::on_currentToolChanged);
@@ -72,8 +66,8 @@ void ToolsWidget::on_colorClicked()
                                               this,
                                               Strings::SELECT_COLOR_TEXT);
         if (color.isValid()) {
-            emit colorChanged(color);
-            updateColorButtonLayout(color);
+            emit colorPickerClicked(color);
+            updateColor(color);
         }
     } catch (std::bad_function_call &ex) {
         qDebug() << ex.what();
@@ -83,7 +77,13 @@ void ToolsWidget::on_colorClicked()
 void ToolsWidget::on_currentToolChanged(ITool &tool)
 {
     on_toolDisabled();
-    m_settingsWidgetLayout->addWidget(tool.settingsWidget());
+
+    auto wdg = tool.settingsWidget();
+
+    if ( wdg ) {
+        m_settingsWidgetLayout->addWidget(wdg);
+    }
+
 }
 
 void ToolsWidget::on_toolDisabled()
@@ -96,7 +96,7 @@ void ToolsWidget::on_toolDisabled()
     }
 }
 
-void ToolsWidget::updateColorButtonLayout(QColor color)
+void ToolsWidget::updateColor(QColor color)
 {
     m_colorButton->setStyleSheet(QString("background-color: %1;"
                                          "min-height: 30px;"

@@ -19,7 +19,8 @@ Core::Core(int &argc, char **argv) : QApplication(argc, argv)
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::LINE_TOOL) ),
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::RECTANGLE_TOOL) ),
         std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::CIRCLE_TOOL) ),
-        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::GRAPH_TOOL) )
+        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::GRAPH_TOOL) ),
+        std::shared_ptr<ITool>( ToolCreator::create(ToolTypes::PIPETTE_TOOL) )
     };
 }
 
@@ -35,6 +36,8 @@ const ToolList &Core::tools()
 void Core::changeSceneForTools(QGraphicsScene *scene)
 {
     for ( auto &tool : _tools ) {
-        tool->setScene(scene);
+        if ( tool ) {
+            tool->setScene(scene);
+        }
     }
 }

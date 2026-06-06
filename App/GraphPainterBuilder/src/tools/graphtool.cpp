@@ -24,8 +24,8 @@ void GraphTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos
         m_startPoint = scenePos;
         //m_erasedItemsThisStroke.clear();
 
-        QPen pen(gScene->currentColor(),
-                 settings()->brushSize(),
+        QPen pen(QColor(Qt::gray),
+                 1,
                  Qt::DashLine,
                  Qt::RoundCap,
                  Qt::RoundJoin);
@@ -41,36 +41,44 @@ void GraphTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos
 
 void GraphTool::handleMouseRelease(Qt::MouseButton button, const QPointF &scenePos)
 {
-    GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+    auto gScene = qobject_cast<GraphicsScene*>(scene());
+    auto graphSettings = dynamic_cast<GraphToolSettings*>(settings().get());
 
     if ( gScene == nullptr ) return;
+    if ( graphSettings == nullptr) return;
+
     if ( button == Qt::LeftButton ) {
+
         QRectF rect = m_tmpRect->rect();
         QList<QPointF> points;
 
         QPen pen(gScene->currentColor(),
-                 settings()->brushSize(),
+                 graphSettings->brushSize(),
                  Qt::SolidLine,
                  Qt::RoundCap,
                  Qt::RoundJoin);
 
         scene()->removeItem(m_tmpRect);
+        delete m_tmpRect;
         m_tmpRect = nullptr;
 
         qreal x0 = rect.left();
-        qreal step = rect.width() / 100;
-        for (int i = 0; i < 100; ++i ) {
+
+        qreal step = rect.width() / graphSettings->pointsCount();
+
+        for (int i = 0; i <= graphSettings->pointsCount(); ++i ) {
             QPointF point (x0, rect.top() + (rand() / qreal(RAND_MAX) * rect.height()));
             points.push_back(point);
             x0 += step;
-
-            qDebug() << point;
         }
 
         QPainterPath painterPath;
 
         painterPath.addPolygon(points);
-        auto item = scene()->addPath(painterPath, pen);
+
+        auto item = new QGraphicsPathItem(painterPath);
+        item->setPen(pen);
+        item->setZValue(gScene->currentLayerZ());
 
         gScene->addSceneCommand(new Commands::AddItemCommand(scene(),item));
     }

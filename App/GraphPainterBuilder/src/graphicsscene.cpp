@@ -98,7 +98,7 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
         m_currentTool = tool;
 
         for ( auto* view : views() ) {
-            if ( tool ) {
+            if ( tool && tool->settings() ) {
                 auto sts = tool->settings();
                 view->setCursor(tool->getCursor());
                 view->setDragMode( sts->dragMode() );
@@ -111,7 +111,7 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
         auto allItems = items();
 
         for (QGraphicsItem *item : allItems) {
-            if ( tool ) {
+            if ( tool && tool->settings() ) {
                 auto sts = tool->settings();
                 item->setFlag(QGraphicsItem::ItemIsSelectable, sts->selectable());
                 item->setFlag(QGraphicsItem::ItemIsMovable, sts->movable());
@@ -127,7 +127,7 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
     }
 }
 
-void GraphicsScene::addImage(const QString &path, QSize &imageSize)
+void GraphicsScene::addImage(const QString & path, QSize &imageSize)
 {
     QGraphicsItem *newItem = nullptr;
 
@@ -140,7 +140,7 @@ void GraphicsScene::addImage(const QString &path, QSize &imageSize)
     if ( newItem ) {
         newItem->setZValue(m_currentLayerZ);
         imageSize = pixmap.size();
-        newItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+        //newItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
         m_undoStack->push(new Commands::AddItemCommand(this, newItem));
     }
 

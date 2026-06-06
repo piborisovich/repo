@@ -3,7 +3,9 @@
 
 #include "toolsettings.hpp"
 
+#include <QLabel>
 #include <QWidget>
+#include <QFormLayout>
 
 class ToolSettingsWidget : public QWidget
 {
@@ -12,11 +14,21 @@ public:
                        QWidget* parent = nullptr,
                        Qt::WindowFlags f = Qt::WindowFlags());
 
+
+protected:
+    void addWidget(QWidget* widget);
+    void addWidget(const QString &name, QWidget* widget);
+
+protected:
+    std::shared_ptr<ToolSettings> m_settings;
+
 private Q_SLOTS:
     void on_brushSizeChanged(int size);
 
 private:
-    std::shared_ptr<ToolSettings> m_settings;
+
+    QFormLayout *m_layout;
+    QLabel *m_sizeLabel;
 };
 
 #endif // TOOLSETTINGSWIDGET_HPP

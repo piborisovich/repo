@@ -6,6 +6,7 @@ HEADERS += \
     $$PWD/dragtool.hpp \
     $$PWD/graphtool.hpp \
     $$PWD/graphtoolsettings.hpp \
+    $$PWD/pipettetool.hpp \
     $$PWD/selecttool.hpp \
     $$PWD/tool.hpp \
     $$PWD/brushtool.hpp \
@@ -22,6 +23,7 @@ SOURCES += \
     $$PWD/dragtool.cpp \
     $$PWD/graphtool.cpp \
     $$PWD/graphtoolsettings.cpp \
+    $$PWD/pipettetool.cpp \
     $$PWD/selecttool.cpp \
     $$PWD/tool.cpp \
     $$PWD/brushtool.cpp \

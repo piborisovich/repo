@@ -8,11 +8,11 @@ class GraphToolSettings : public ToolSettings
 public:
     GraphToolSettings();
 
-    size_t pointCount() const;
-    void setPointCount(size_t newPointCount);
+    int pointsCount() const;
+    void setPointsCount(int newPointsCount);
 
 private:
-    size_t m_pointCount;
+    int m_pointsCount;
 };
 
 #endif // GRAPHTOOLSETTINGS_HPP

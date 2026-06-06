@@ -16,7 +16,8 @@ public:
         LINE_TOOL,
         RECTANGLE_TOOL,
         CIRCLE_TOOL,
-        GRAPH_TOOL
+        GRAPH_TOOL,
+        PIPETTE_TOOL
     };
 
 

@@ -38,6 +38,7 @@ private Q_SLOTS:
     void on_imageImportTriggered();   //!< Импорт
     void on_exportToImageTriggered(); //!< Экспорт
     void on_clearCanvasTriggered();   //!< Очистить сцену
+    void on_viewScaleChanged(qreal scale); //!< Масштаб представления изменен
 
 private:
     void init();
@@ -52,7 +53,8 @@ private:
     Core *m_core;
 
     GraphicsView *m_view;   //!< Представление
-    QLabel *m_statusLabel;
+    QLabel *m_xyLabel;
+    QLabel *m_scaleLabel;
 
     ToolsWidget *m_toolsWidget;   //!< Инструменты
     LayersWidget *m_layersWidget;    //!< Слои;

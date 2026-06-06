@@ -8,6 +8,7 @@
 #include "rectangletool.hpp"
 #include "circletool.hpp"
 #include "graphtool.hpp"
+#include "pipettetool.hpp"
 
 
 ITool *ToolCreator::create(ToolTypes toolType)
@@ -21,6 +22,7 @@ ITool *ToolCreator::create(ToolTypes toolType)
     case ToolTypes::RECTANGLE_TOOL: return new RectangleTool();
     case ToolTypes::CIRCLE_TOOL: return new CircleTool();
     case ToolTypes::GRAPH_TOOL: return new GraphTool();
+    case ToolTypes::PIPETTE_TOOL: return new PipetteTool();
         default:;
     }
     return nullptr;

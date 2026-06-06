@@ -11,12 +11,15 @@
 
 static const int DEFAULT_LAYER_Z = 20;
 
+static const char* SCALE_TAMPLATE = "%1 %";
+
 MainWindow::MainWindow(Core *core, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_core(core)
     , m_view( new GraphicsView(this) )
-    , m_statusLabel( new QLabel("", this))
+    , m_xyLabel( new QLabel("", this))
+    , m_scaleLabel( new QLabel(QString(SCALE_TAMPLATE).arg(100), this))
     , m_toolsWidget( new ToolsWidget(Strings::TOOLS_TEXT, std::bind(&GraphicsView::currentColor, m_view ), core->tools(), this) )
     , m_layersWidget( new LayersWidget(Strings::LAYERS_TITLE, this ) )
 {
@@ -46,7 +49,7 @@ void MainWindow::on_imageImportTriggered()
 
     m_view->setSceneRect( QRectF( QPointF(0, 0),
                                 QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
-                                       qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
+                                        qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
 }
 
 void MainWindow::on_exportToImageTriggered()
@@ -76,11 +79,17 @@ void MainWindow::on_clearCanvasTriggered()
     }
 }
 
+void MainWindow::on_viewScaleChanged(qreal scale)
+{
+    m_scaleLabel->setText( QString(SCALE_TAMPLATE).arg( int(scale * 100) ) );
+}
+
 void MainWindow::init()
 {
     setWindowTitle( Core::applicationName() );
 
-    ui->statusbar->addWidget(m_statusLabel);
+    ui->statusbar->addWidget(m_scaleLabel);
+    ui->statusbar->addWidget(m_xyLabel);
 
     centralWidget()->layout()->addWidget(m_view);
 
@@ -127,6 +136,12 @@ void MainWindow::init()
                      &GraphicsView::canRedoChanged,
                      ui->actionRedo,
                      &QAction::setEnabled);
+    Q_ASSERT(result);
+
+    result = connect(m_view,
+                     &GraphicsView::scaleChanged,
+                     this,
+                     &MainWindow::on_viewScaleChanged);
     Q_ASSERT(result);
 
     result = connect(m_layersWidget,
@@ -190,10 +205,24 @@ void MainWindow::init()
     Q_ASSERT(result);
 
     result = connect(m_toolsWidget,
-                     &ToolsWidget::colorChanged,
+                     &ToolsWidget::colorPickerClicked,
                      m_view,
-                     &GraphicsView::setCurrentColor);
+                     &GraphicsView::setCurrentrColor);
     Q_ASSERT(result);
+
+    for ( auto &tool : m_core->tools() ) {
+        result = connect(tool.get(),
+                         &ITool::colorChangeRequested,
+                         m_toolsWidget,
+                         &ToolsWidget::updateColor);
+        Q_ASSERT(result);
+
+        result = connect(tool.get(),
+                         &ITool::colorChangeRequested,
+                         m_view,
+                         &GraphicsView::setCurrentrColor);
+        Q_ASSERT(result);
+    }
 
     ui->actionLayer_panel->setChecked(true);
 
@@ -214,5 +243,5 @@ void MainWindow::mouseReleased(Qt::MouseButton button, const QPointF &scenePos)
 
 void MainWindow::mouseMoved(const QPointF &scenePos)
 {
-    m_statusLabel->setText(QString("x: %1, y: %2").arg(scenePos.x()).arg(scenePos.y()));
+    m_xyLabel->setText(QString("x: %1, y: %2").arg(scenePos.x()).arg(scenePos.y()));
 }

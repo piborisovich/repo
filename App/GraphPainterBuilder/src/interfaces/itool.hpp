@@ -16,12 +16,16 @@
 class ITool : public QObject
 {
     Q_OBJECT
+
 public:
 
     explicit ITool(QObject *parent = nullptr) : QObject(parent) {}
-
     virtual ~ITool() {}
 
+Q_SIGNALS:
+    void colorChangeRequested(const QColor &color);
+
+public:
     virtual QGraphicsScene *scene() = 0;
     virtual void setScene(QGraphicsScene *scene) = 0;
 
