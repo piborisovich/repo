@@ -8,8 +8,7 @@ static const qreal DEFAULT_SCALE_CHANGED_STEP_UP = 1.25;
 static const qreal DEFAULT_SCALE_CHANGED_STEP_DOWN = 0.8;
 
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
-    , m_undoStack( new QUndoStack() )
-    , m_scene( new GraphicsScene(m_undoStack, this) )
+    , m_scene( new GraphicsScene(this) )
     , m_scale(1.0)
 {
     setScene(m_scene);
@@ -20,14 +19,14 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
 
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    auto result = connect(m_undoStack.get(),
-                          &QUndoStack::canUndoChanged,
+    auto result = connect(m_scene,
+                          &GraphicsScene::canUndoChanged,
                           this,
                           &GraphicsView::canUndoChanged);
     Q_ASSERT(result);
 
-    result = connect(m_undoStack.get(),
-                     &QUndoStack::canRedoChanged,
+    result = connect(m_scene,
+                     &GraphicsScene::canRedoChanged,
                      this,
                      &GraphicsView::canRedoChanged);
     Q_ASSERT(result);
@@ -35,12 +34,12 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
 
 void GraphicsView::undo()
 {
-    m_undoStack->undo();
+    m_scene->undo();
 }
 
 void GraphicsView::redo()
 {
-    m_undoStack->redo();
+    m_scene->redo();
 }
 
 void GraphicsView::addSceneListener(ISceneListener *listener)
@@ -93,20 +92,13 @@ QColor GraphicsView::currentColor() const
 
 void GraphicsView::clearLayer(int layerZ)
 {
-    QList<QGraphicsItem*> allItems = m_scene->items();
-    for (QGraphicsItem *item : allItems) {
-        if (item->zValue() == layerZ) {
-            m_scene->removeItem(item);
-            delete item;
-        }
-    }
-    m_undoStack->clear(); // Очищаем историю, так как элементы физически удалены
+    m_scene->clearLayer(layerZ);
+
 }
 
 void GraphicsView::clear()
 {
-    m_scene->clear();
-    m_undoStack->clear();
+    m_scene->clearScene();
 }
 
 bool GraphicsView::isSceneEmpty() const

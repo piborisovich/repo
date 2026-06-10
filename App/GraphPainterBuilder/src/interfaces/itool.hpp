@@ -40,6 +40,9 @@ public:
     virtual void handleMousePress(Qt::MouseButton button, const QPointF &scenePos) = 0;
     virtual void handleMouseRelease(Qt::MouseButton button, const QPointF &scenePos) = 0;
     virtual void handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePos) = 0;
+
+    virtual void select() = 0;
+    virtual void unselect() = 0;
 };
 
 #endif // ITOOL_HPP

@@ -4,17 +4,40 @@
 
 #include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QUndoStack>
 
 
 const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(QColor(255, 255, 255));
 
-GraphicsScene::GraphicsScene(std::shared_ptr<QUndoStack> undoStack, QObject *parent) : QGraphicsScene(parent)
+GraphicsScene::GraphicsScene(QObject *parent) : QGraphicsScene(parent)
     , m_currentLayerZ(20)
     , m_currentColor(Qt::black)
     , m_currentTool(nullptr)
-    , m_undoStack(undoStack)
+    , m_undoStack(new QUndoStack())
 {
     setBackgroundBrush(BACKGROUND_BRUSH);
+
+    auto result = connect(m_undoStack.get(),
+                          &QUndoStack::canUndoChanged,
+                          this,
+                          &GraphicsScene::canUndoChanged);
+    Q_ASSERT(result);
+
+    result = connect(m_undoStack.get(),
+                     &QUndoStack::canRedoChanged,
+                     this,
+                     &GraphicsScene::canRedoChanged);
+    Q_ASSERT(result);
+}
+
+void GraphicsScene::undo()
+{
+    m_undoStack->undo();
+}
+
+void GraphicsScene::redo()
+{
+    m_undoStack->redo();
 }
 
 void GraphicsScene::addSceneListener(ISceneListener *listener)
@@ -92,6 +115,19 @@ void GraphicsScene::addSceneCommand(QUndoCommand *command)
     }
 }
 
+void GraphicsScene::clearScene()
+{
+    if ( m_currentTool ) {
+        m_currentTool->unselect();
+    }
+    clear();
+    m_undoStack->clear();
+
+    if ( m_currentTool ) {
+        m_currentTool->select();
+    }
+}
+
 void GraphicsScene::changeCurrentTool(ITool* tool)
 {
     if ( tool != m_currentTool ) {
@@ -105,23 +141,6 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
             } else {
                 view->setCursor( QCursor() );
                 view->setDragMode( QGraphicsView::NoDrag );
-            }
-        }
-
-        auto allItems = items();
-
-        for (QGraphicsItem *item : allItems) {
-            if ( tool && tool->settings() ) {
-                auto sts = tool->settings();
-                item->setFlag(QGraphicsItem::ItemIsSelectable, sts->selectable());
-                item->setFlag(QGraphicsItem::ItemIsMovable, sts->movable());
-            } else {
-                item->setFlag(QGraphicsItem::ItemIsSelectable, false);
-                item->setFlag(QGraphicsItem::ItemIsMovable, false);
-            }
-
-            if ( (item->flags() & QGraphicsItem::ItemIsSelectable) == 0 ) {
-                item->setSelected(false);
             }
         }
     }
@@ -154,4 +173,26 @@ int GraphicsScene::currentLayerZ() const
 void GraphicsScene::setCurrentLayerZ(int newCurrentLayerZ)
 {
     m_currentLayerZ = newCurrentLayerZ;
+}
+
+void GraphicsScene::clearLayer(int layerZ)
+{
+    if ( m_currentTool ) {
+        m_currentTool->unselect();
+    }
+
+    QList<QGraphicsItem*> allItems = items();
+
+    for (QGraphicsItem *item : allItems) {
+        if (item->zValue() == layerZ) {
+            removeItem(item);
+            delete item;
+        }
+    }
+
+    m_undoStack->clear(); // Очищаем историю, так как элементы физически удалены
+
+    if ( m_currentTool ) {
+        m_currentTool->select();
+    }
 }

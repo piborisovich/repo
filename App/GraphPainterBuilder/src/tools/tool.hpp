@@ -27,8 +27,12 @@ public:
 
     std::shared_ptr<ToolSettings> settings() override;
 
-private:
+    void select() override;
+    void unselect() override;
+
+private Q_SLOTS:
     void on_buttonClicked(bool checked);
+    void on_buttonToggled(bool checked);
 
 private:
 

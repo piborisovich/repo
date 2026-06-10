@@ -26,6 +26,12 @@ Tool::Tool(const QString &name,
                           this,
                           &Tool::on_buttonClicked);
     Q_ASSERT(result);
+
+    result = connect(m_button,
+                     &QToolButton::toggled,
+                     this,
+                     &Tool::on_buttonToggled);
+    Q_ASSERT(result);
 }
 
 QGraphicsScene *Tool::scene()
@@ -60,6 +66,23 @@ std::shared_ptr<ToolSettings> Tool::settings()
     return m_settings;
 }
 
+void Tool::select()
+{
+    if ( m_scene ) {
+
+        auto allItems = m_scene->items();
+
+        for (QGraphicsItem *item : allItems) {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            item->setFlag(QGraphicsItem::ItemIsMovable, false);
+        }
+    }
+}
+
+void Tool::unselect()
+{
+}
+
 void Tool::on_buttonClicked(bool checked)
 {
     if ( m_scene ) {
@@ -71,5 +94,14 @@ void Tool::on_buttonClicked(bool checked)
                 gs->changeCurrentTool(nullptr);
             }
         }
+    }
+}
+
+void Tool::on_buttonToggled(bool checked)
+{
+    if (checked) {
+        select();
+    } else {
+        unselect();
     }
 }

@@ -3,7 +3,6 @@
 
 #include "graphicsscene.hpp"
 
-#include <QUndoStack>
 #include <QGraphicsView>
 
 /*!
@@ -50,10 +49,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-    std::shared_ptr<QUndoStack> m_undoStack; //!< Стек команд для отмены
     GraphicsScene *m_scene;         //!< Сцена
     QPoint m_origin;
-
     qreal m_scale;
 };
 

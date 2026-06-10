@@ -18,20 +18,11 @@ public:
     QGraphicsView::DragMode dragMode() const;
     void setDragMode(const QGraphicsView::DragMode &newDragMode);
 
-    bool movable() const;
-    void setMovable(bool newIsMovable);
-
-    bool selectable() const;
-    void setSelectable(bool newIsSelectable);
-
-
     virtual ~ToolSettings() {}
 
 private:
     int m_brushSize;
     QGraphicsView::DragMode m_dragMode;
-    bool m_isMovable;
-    bool m_isSelectable;
 };
 
 #endif // TOOLSETTINGS_HPP

@@ -18,7 +18,15 @@ class GraphicsScene : public QGraphicsScene
     Q_OBJECT
 public:
 
-    GraphicsScene(std::shared_ptr<QUndoStack> undoStack, QObject *parent = nullptr);
+    GraphicsScene(QObject *parent = nullptr);
+
+Q_SIGNALS:
+    void canUndoChanged(bool canUndo);
+    void canRedoChanged(bool canRedo);
+
+public Q_SLOTS:
+    void undo();
+    void redo();
 
 public:
     void addSceneListener(ISceneListener* listener);
@@ -26,6 +34,8 @@ public:
 
     int currentLayerZ() const;
     void setCurrentLayerZ(int newCurrentLayerZ);
+
+    void clearLayer(int layerZ);
 
     void changeCurrentTool(ITool *tool);
     /*!
@@ -43,6 +53,8 @@ public:
      * \param command
      */
     void addSceneCommand(QUndoCommand *command);
+
+    void clearScene();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

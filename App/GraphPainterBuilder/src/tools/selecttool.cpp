@@ -1,5 +1,7 @@
 #include "selecttool.hpp"
 
+#include <QGraphicsItem>
+
 
 SelectTool::SelectTool(QObject *parent) :
     Tool("Select",
@@ -8,8 +10,6 @@ SelectTool::SelectTool(QObject *parent) :
          parent)
 {
     settings()->setDragMode(QGraphicsView::RubberBandDrag);
-    settings()->setMovable(true);
-    settings()->setSelectable(true);
 }
 
 void SelectTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
@@ -28,4 +28,17 @@ void SelectTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &sceneP
 {
     Q_UNUSED(buttons);
     Q_UNUSED(scenePos);
+}
+
+void SelectTool::select()
+{
+    if ( scene() ) {
+
+        auto allItems =  scene()->items();
+
+        for (QGraphicsItem *item : allItems) {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            item->setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
+    }
 }
