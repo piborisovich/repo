@@ -30,6 +30,27 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
                      this,
                      &GraphicsView::canRedoChanged);
     Q_ASSERT(result);
+
+    result = connect(m_scene,
+                     &GraphicsScene::itemSelected,
+                     this,
+                     &GraphicsView::itemSelected);
+    Q_ASSERT(result);
+
+    result = connect(m_scene,
+                     &GraphicsScene::itemDeselected,
+                     this,
+                     &GraphicsView::itemDeselected);
+    Q_ASSERT(result);
+}
+
+GraphicsView::~GraphicsView()
+{
+    if ( m_scene ) {
+        m_scene->clearSelection();
+        m_scene->setFocusItem(nullptr);
+        m_scene->clear();
+    }
 }
 
 void GraphicsView::undo()

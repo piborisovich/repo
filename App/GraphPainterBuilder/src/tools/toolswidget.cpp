@@ -96,7 +96,7 @@ void ToolsWidget::on_toolDisabled()
     }
 }
 
-void ToolsWidget::updateColor(QColor color)
+void ToolsWidget::updateColor(const QColor &color)
 {
     m_colorButton->setStyleSheet(QString("background-color: %1;"
                                          "min-height: 30px;"

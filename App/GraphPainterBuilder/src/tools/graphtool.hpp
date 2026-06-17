@@ -13,8 +13,6 @@ class GraphTool : public Tool
 public:
     explicit GraphTool(QObject* parent = nullptr);
 
-    ~GraphTool() override;
-
     void handleMousePress(Qt::MouseButton button, const QPointF &scenePos) override;
     void handleMouseRelease(Qt::MouseButton button, const QPointF &scenePos) override;
     void handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePos) override;
@@ -30,8 +28,8 @@ private:
     void removeFromScene();
 
 private:
-    std::pair< std::shared_ptr<ConstraintLineItem>, std::shared_ptr<ConstraintLineItem> > m_xCursors;
-    std::pair< std::shared_ptr<ConstraintLineItem>, std::shared_ptr<ConstraintLineItem> > m_yCursors;
+    std::pair< ConstraintLineItem*, ConstraintLineItem* > m_xCursors;
+    std::pair< ConstraintLineItem*, ConstraintLineItem* > m_yCursors;
 };
 
 #endif // GRAPHTOOL_HPP

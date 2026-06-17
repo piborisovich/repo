@@ -1,6 +1,6 @@
 #include "linetool.hpp"
 #include "graphicsscene.hpp"
-#include "commands.hpp"
+#include "additemcommand.hpp"
 
 
 LineTool::LineTool(QObject *parent) :
@@ -29,7 +29,7 @@ void LineTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
                  Qt::RoundCap,
                  Qt::RoundJoin);
 
-        m_previewLine = new QGraphicsLineItem(QLineF(m_startPoint, m_startPoint));
+        m_previewLine = new LineItem(QLineF(m_startPoint, m_startPoint));
         m_previewLine->setPen(pen);
         m_previewLine->setZValue(gScene->currentLayerZ());
         scene()->addItem(m_previewLine); // Временно добавляем для предпросмотра

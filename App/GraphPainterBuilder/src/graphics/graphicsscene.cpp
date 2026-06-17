@@ -1,5 +1,5 @@
 #include "graphicsscene.hpp"
-#include "commands.hpp"
+#include "additemcommand.hpp"
 #include "itool.hpp"
 
 #include <QMouseEvent>
@@ -13,20 +13,26 @@ GraphicsScene::GraphicsScene(QObject *parent) : QGraphicsScene(parent)
     , m_currentLayerZ(20)
     , m_currentColor(Qt::black)
     , m_currentTool(nullptr)
-    , m_undoStack(new QUndoStack())
+    , m_undoStack(new QUndoStack(this))
 {
     setBackgroundBrush(BACKGROUND_BRUSH);
 
-    auto result = connect(m_undoStack.get(),
+    auto result = connect(m_undoStack,
                           &QUndoStack::canUndoChanged,
                           this,
                           &GraphicsScene::canUndoChanged);
     Q_ASSERT(result);
 
-    result = connect(m_undoStack.get(),
+    result = connect(m_undoStack,
                      &QUndoStack::canRedoChanged,
                      this,
                      &GraphicsScene::canRedoChanged);
+    Q_ASSERT(result);
+
+    result = connect(this,
+                     &GraphicsScene::selectionChanged,
+                     this,
+                     &GraphicsScene::on_selectionChanged);
     Q_ASSERT(result);
 }
 
@@ -98,6 +104,17 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
+void GraphicsScene::on_selectionChanged()
+{
+    auto items = selectedItems();
+
+    if ( items.size() == 1 ) {
+        Q_EMIT itemSelected(items.first());
+    } else {
+        Q_EMIT itemDeselected();
+    }
+}
+
 QColor GraphicsScene::currentColor() const
 {
     return m_currentColor;
@@ -141,6 +158,14 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
             } else {
                 view->setCursor( QCursor() );
                 view->setDragMode( QGraphicsView::NoDrag );
+            }
+        }
+
+        if ( tool == nullptr ) {
+            foreach (auto &item, items() ) {
+                item->setSelected(false);
+                item->setFlag(QGraphicsItem::ItemIsMovable, false);
+                item->setFlag(QGraphicsItem::ItemIsSelectable, false);
             }
         }
     }

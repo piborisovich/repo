@@ -2,7 +2,7 @@
 #include "graphicsscene.hpp"
 #include "graphtoolsettings.hpp"
 #include "graphtoolsettingswidget.hpp"
-#include "commands.hpp"
+#include "additemcommand.hpp"
 
 #include <QGraphicsRectItem>
 
@@ -25,36 +25,10 @@ GraphTool::GraphTool(QObject* parent)
     }
 }
 
-GraphTool::~GraphTool()
-{
-    removeFromScene();
-}
-
 void GraphTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
 {
     Q_UNUSED(button);
     Q_UNUSED(scenePos);
-    /*GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
-
-    if ( gScene == nullptr ) return;
-
-    if ( button == Qt::LeftButton ) {
-        m_startPoint = scenePos;
-        //m_erasedItemsThisStroke.clear();
-
-        QPen pen(QColor(Qt::gray),
-                 1,
-                 Qt::DashLine,
-                 Qt::RoundCap,
-                 Qt::RoundJoin);
-
-        m_tmpRect = new QGraphicsRectItem(QRectF(m_startPoint, m_startPoint));
-
-        m_tmpRect->setPen(pen);
-        m_tmpRect->setZValue(gScene->currentLayerZ());
-
-        scene()->addItem(m_tmpRect);
-    }*/
 }
 
 void GraphTool::handleMouseRelease(Qt::MouseButton button, const QPointF &scenePos)
@@ -67,13 +41,6 @@ void GraphTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePo
 {
     Q_UNUSED(buttons);
     Q_UNUSED(scenePos);
-    /*if ( buttons & Qt::LeftButton ) {
-        QPointF leftPoint(qMin(scenePos.x(), m_startPoint.x()), qMin(scenePos.y(), m_startPoint.y()));
-        QPointF rightPoint(qMax(scenePos.x(), m_startPoint.x()), qMax(scenePos.y(), m_startPoint.y()));
-
-        m_tmpRect->setRect( QRectF(leftPoint,
-                                  rightPoint));
-    }*/
 }
 
 void GraphTool::select()
@@ -85,11 +52,11 @@ void GraphTool::select()
 
     auto bRect = graphSettings->boundingRect();
 
-    m_xCursors = std::make_pair( std::make_shared<ConstraintLineItem>(QPointF(bRect.left(), scene()->height())),
-                                 std::make_shared<ConstraintLineItem>(QPointF(bRect.right(), scene()->height())) );
+    m_xCursors = std::make_pair( new ConstraintLineItem( QPointF(bRect.left(), scene()->height()) ),
+                                 new ConstraintLineItem( QPointF(bRect.right(), scene()->height()) ) );
 
-    m_yCursors = std::make_pair(std::make_shared<ConstraintLineItem>(QPointF(scene()->width(), bRect.top()), Qt::Horizontal),
-                                std::make_shared<ConstraintLineItem>(QPointF(scene()->width(), bRect.bottom()), Qt::Horizontal));
+    m_yCursors = std::make_pair( new ConstraintLineItem(QPointF(scene()->width(), bRect.top()), Qt::Horizontal),
+                                 new ConstraintLineItem(QPointF(scene()->width(), bRect.bottom()), Qt::Horizontal));
 
 
     m_xCursors.first->setZValue(gScene->currentLayerZ());
@@ -98,32 +65,32 @@ void GraphTool::select()
     m_yCursors.first->setZValue(gScene->currentLayerZ());
     m_yCursors.second->setZValue(gScene->currentLayerZ());
 
-    scene()->addItem(m_xCursors.first.get());
-    scene()->addItem(m_xCursors.second.get());
+    scene()->addItem(m_xCursors.first);
+    scene()->addItem(m_xCursors.second);
 
-    scene()->addItem(m_yCursors.first.get());
-    scene()->addItem(m_yCursors.second.get());
+    scene()->addItem(m_yCursors.first);
+    scene()->addItem(m_yCursors.second);
 
 
-    auto result = connect(m_xCursors.first.get(),
+    auto result = connect(m_xCursors.first,
                           &ConstraintLineItem::positionChanged,
                           this,
                           &GraphTool::on_cursorPositionChanged);
     Q_ASSERT(result);
 
-    result = connect(m_xCursors.second.get(),
+    result = connect(m_xCursors.second,
                      &ConstraintLineItem::positionChanged,
                      this,
                      &GraphTool::on_cursorPositionChanged);
     Q_ASSERT(result);
 
-    result = connect(m_yCursors.first.get(),
+    result = connect(m_yCursors.first,
                      &ConstraintLineItem::positionChanged,
                      this,
                      &GraphTool::on_cursorPositionChanged);
     Q_ASSERT(result);
 
-    result = connect(m_yCursors.second.get(),
+    result = connect(m_yCursors.second,
                      &ConstraintLineItem::positionChanged,
                      this,
                      &GraphTool::on_cursorPositionChanged);
@@ -135,11 +102,16 @@ void GraphTool::unselect()
 {
     removeFromScene();
 
-    m_xCursors.first.reset();
-    m_xCursors.second.reset();
+    delete m_xCursors.first;
+    delete m_xCursors.second;
 
-    m_yCursors.first.reset();
-    m_yCursors.second.reset();
+    delete m_yCursors.first;
+    delete m_yCursors.second;
+
+    m_xCursors.first = nullptr;
+    m_xCursors.second = nullptr;
+    m_yCursors.first = nullptr;
+    m_yCursors.second = nullptr;
 }
 
 void GraphTool::on_cursorPositionChanged(const QPointF &point)
@@ -209,10 +181,10 @@ void GraphTool::on_startPlot()
 void GraphTool::removeFromScene()
 {
     if ( scene() ) {
-        scene()->removeItem(m_xCursors.first.get());
-        scene()->removeItem(m_xCursors.second.get());
 
-        scene()->removeItem(m_yCursors.first.get());
-        scene()->removeItem(m_yCursors.second.get());
+        if ( m_xCursors.first && m_xCursors.first->scene() )scene()->removeItem(m_xCursors.first);
+        if ( m_xCursors.second && m_xCursors.second->scene() )scene()->removeItem(m_xCursors.second);
+        if ( m_yCursors.first && m_yCursors.first->scene())scene()->removeItem(m_yCursors.first);
+        if ( m_yCursors.second && m_yCursors.second->scene()) scene()->removeItem(m_yCursors.second);
     }
 }

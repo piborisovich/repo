@@ -1,7 +1,7 @@
 #include "circletool.hpp"
 
 #include "graphicsscene.hpp"
-#include "commands.hpp"
+#include "additemcommand.hpp"
 
 CircleTool::CircleTool(QObject *parent) :
     Tool("Circle",

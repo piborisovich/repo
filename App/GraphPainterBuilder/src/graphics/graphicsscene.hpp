@@ -17,12 +17,13 @@ class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-
     GraphicsScene(QObject *parent = nullptr);
 
 Q_SIGNALS:
     void canUndoChanged(bool canUndo);
     void canRedoChanged(bool canRedo);
+    void itemSelected(QGraphicsItem* item);
+    void itemDeselected();
 
 public Q_SLOTS:
     void undo();
@@ -61,6 +62,9 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
+private Q_SLOTS:
+    void on_selectionChanged();
+
 private:
 
     enum State {
@@ -78,7 +82,7 @@ private:
 
     ITool* m_currentTool;
 
-    std::shared_ptr<QUndoStack> m_undoStack;
+    QUndoStack* m_undoStack;
 
     QList<ISceneListener*> m_listeners;
 };

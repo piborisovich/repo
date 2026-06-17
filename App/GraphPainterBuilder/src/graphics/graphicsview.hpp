@@ -14,10 +14,14 @@ class GraphicsView : public QGraphicsView
 public:
     GraphicsView(QWidget *parent = nullptr);
 
+    ~GraphicsView();
+
 Q_SIGNALS:
     void canUndoChanged(bool canUndo);
     void canRedoChanged(bool canRedo);
     void scaleChanged(qreal scale);
+    void itemSelected(QGraphicsItem *item);
+    void itemDeselected();
 
 public Q_SLOTS:
     void undo();

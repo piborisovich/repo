@@ -28,7 +28,7 @@ public Q_SLOTS:
     /*!
      * \brief Обновить отображаемый цвет
      */
-    void updateColor(QColor color);
+    void updateColor(const QColor &color);
 
 private Q_SLOTS:
     void on_colorClicked();

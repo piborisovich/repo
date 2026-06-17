@@ -6,6 +6,7 @@
 #include "graphicsview.hpp"
 #include "layerswidget.hpp"
 #include "toolswidget.hpp"
+#include "propertiesdockwidget.hpp"
 
 #include <QDateTime>
 #include <QDockWidget>
@@ -38,7 +39,9 @@ private Q_SLOTS:
     void on_imageImportTriggered();   //!< Импорт
     void on_exportToImageTriggered(); //!< Экспорт
     void on_clearCanvasTriggered();   //!< Очистить сцену
-    void on_viewScaleChanged(qreal scale); //!< Масштаб представления изменен
+    void on_viewScaleChanged(qreal scale);     //!< Масштаб представления изменен
+    void on_itemSelected(QGraphicsItem* item); //!< Графический элемент выделен
+    void on_itemDeselected();                  //!< Снято выделение с графисекого элемента
 
 private:
     void init();
@@ -58,5 +61,6 @@ private:
 
     ToolsWidget *m_toolsWidget;   //!< Инструменты
     LayersWidget *m_layersWidget;    //!< Слои;
+    PropertiesDockWidget *m_propertiesWidget; //!< Свойства графического элемента
 };
 #endif // MAINWINDOW_HPP

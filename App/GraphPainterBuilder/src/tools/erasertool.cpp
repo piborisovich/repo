@@ -1,6 +1,6 @@
 #include "erasertool.hpp"
 #include "graphicsscene.hpp"
-#include "commands.hpp"
+#include "macrodeletecommand.hpp"
 
 #include <QRectF>
 
@@ -18,7 +18,6 @@ void EraserTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePo
         m_erasedItems.clear();
         processDrawing(scenePos);
     }
-
 }
 
 void EraserTool::handleMouseRelease(Qt::MouseButton button, const QPointF &scenePos)

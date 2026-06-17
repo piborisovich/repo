@@ -2,6 +2,7 @@
 #define LINETOOL_HPP
 
 #include "tool.hpp"
+#include "lineitem.hpp"
 
 class LineTool : public Tool
 {
@@ -13,7 +14,7 @@ public:
     void handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePos) override;
 
 private:
-    QGraphicsLineItem *m_previewLine;
+    LineItem *m_previewLine;
     QPointF m_startPoint;
 };
 

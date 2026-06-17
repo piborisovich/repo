@@ -1,7 +1,7 @@
 #include "rectangletool.hpp"
 
 #include "graphicsscene.hpp"
-#include "commands.hpp"
+#include "additemcommand.hpp"
 
 RectangleTool::RectangleTool(QObject *parent) :
     Tool("Rectangle",

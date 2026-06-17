@@ -1,7 +1,7 @@
 #include "brushtool.hpp"
 #include "graphicsscene.hpp"
 
-#include "commands.hpp"
+#include "additemcommand.hpp""
 
 BrushTool::BrushTool(QObject *parent) :
     Tool("Brush",

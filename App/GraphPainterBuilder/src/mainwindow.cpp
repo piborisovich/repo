@@ -22,6 +22,7 @@ MainWindow::MainWindow(Core *core, QWidget *parent)
     , m_scaleLabel( new QLabel(QString(SCALE_TAMPLATE).arg(100), this))
     , m_toolsWidget( new ToolsWidget(Strings::TOOLS_TEXT, std::bind(&GraphicsView::currentColor, m_view ), core->tools(), this) )
     , m_layersWidget( new LayersWidget(Strings::LAYERS_TITLE, this ) )
+    , m_propertiesWidget(nullptr)
 {
     ui->setupUi(this);
     m_view->addSceneListener(this);
@@ -84,6 +85,25 @@ void MainWindow::on_viewScaleChanged(qreal scale)
     m_scaleLabel->setText( QString(SCALE_TAMPLATE).arg( int(scale * 100) ) );
 }
 
+void MainWindow::on_itemSelected(QGraphicsItem *item)
+{
+    if ( item ) {
+        m_propertiesWidget = new PropertiesDockWidget(Strings::PROPERTIES_WIDGET_TITLE,
+                                                      item,
+                                                      this);
+        addDockWidget(Qt::RightDockWidgetArea, m_propertiesWidget);
+    }
+}
+
+void MainWindow::on_itemDeselected()
+{
+    if ( m_propertiesWidget ) {
+        removeDockWidget(m_propertiesWidget);
+        m_propertiesWidget->deleteLater();
+        m_propertiesWidget = nullptr;
+    }
+}
+
 void MainWindow::init()
 {
     setWindowTitle( Core::applicationName() );
@@ -142,6 +162,18 @@ void MainWindow::init()
                      &GraphicsView::scaleChanged,
                      this,
                      &MainWindow::on_viewScaleChanged);
+    Q_ASSERT(result);
+
+    result = connect(m_view,
+                     &GraphicsView::itemSelected,
+                     this,
+                     &MainWindow::on_itemSelected);
+    Q_ASSERT(result);
+
+    result = connect(m_view,
+                     &GraphicsView::itemDeselected,
+                     this,
+                     &MainWindow::on_itemDeselected);
     Q_ASSERT(result);
 
     result = connect(m_layersWidget,
