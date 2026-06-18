@@ -4,6 +4,9 @@
 #include <QGraphicsEllipseItem>
 #include <QUndoStack>
 
+/*!
+ * \brief Класс вершины
+ */
 class VertexMarkerItem : public QGraphicsEllipseItem
 {
 public:
@@ -11,13 +14,16 @@ public:
 
     void deactivate();
 
-    void setVertexPos(const QPointF& pos);
+    void setVertexPos(const QPointF& p);
 
     int vertexIndex() const;
     void setVertexIndex(int newVertexIndex);
 
+    QPointF lastActivatingPos() const;
+
 private:
     int m_vertexIndex;
+    QPointF m_activatingPos;
 };
 
 #endif // VERTEXMARKERITEM_HPP

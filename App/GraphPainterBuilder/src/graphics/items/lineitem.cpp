@@ -1,4 +1,6 @@
 #include "lineitem.hpp"
+#include "graphicsscene.hpp"
+#include "movelinevertexcommand.hpp"
 
 #include <QGraphicsSceneHoverEvent>
 
@@ -47,7 +49,9 @@ void LineItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
         // Активируем или скрываем маркер
         if (bestIndex != -1) {
-            m_vertex->setVertexPos(bestIndex == 0 ? l.p1() :l. p2());
+            if ( !m_vertex->isVisible() ) {
+                m_vertex->setVertexPos(bestIndex == 0 ? l.p1() :l. p2());
+            }
         } else {
             m_vertex->deactivate();
         }
@@ -94,6 +98,15 @@ void LineItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void LineItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    GraphicsScene* gScene = dynamic_cast<GraphicsScene*>(scene());
+
+    if ( gScene && m_vertex->isVisible() ) {
+        gScene->addSceneCommand( new Commands::MoveLineVertexCommand(this,
+                                                                    m_vertex->vertexIndex(),
+                                                                    m_vertex->lastActivatingPos(),
+                                                                    m_vertex->vertexIndex() == 0 ? line().p1() : line().p2()) );
+    }
+
     QGraphicsLineItem::mouseReleaseEvent(event);
 }
 

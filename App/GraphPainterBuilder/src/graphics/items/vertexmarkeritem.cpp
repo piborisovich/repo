@@ -21,12 +21,15 @@ void VertexMarkerItem::deactivate()
     setVisible(false);
 }
 
-void VertexMarkerItem::setVertexPos(const QPointF &pos)
+void VertexMarkerItem::setVertexPos(const QPointF &p)
 {
+    if ( !isVisible() ) {
+        m_activatingPos = p;
+    }
     setFlag(QGraphicsItem::ItemIsSelectable, false);
     setFlag(QGraphicsItem::ItemIsMovable, false);
 
-    setPos(pos);
+    setPos(p);
     setVisible(true);
 }
 
@@ -38,4 +41,9 @@ int VertexMarkerItem::vertexIndex() const
 void VertexMarkerItem::setVertexIndex(int newVertexIndex)
 {
     m_vertexIndex = newVertexIndex;
+}
+
+QPointF VertexMarkerItem::lastActivatingPos() const
+{
+    return m_activatingPos;
 }

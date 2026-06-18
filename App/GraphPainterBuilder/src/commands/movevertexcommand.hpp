@@ -1,8 +1,8 @@
 #ifndef MOVEVERTEXCOMMAND_HPP
 #define MOVEVERTEXCOMMAND_HPP
 
+#include <QPointF>
 #include <QUndoCommand>
-#include <QGraphicsPathItem>
 
 namespace Commands
 {
@@ -13,8 +13,7 @@ namespace Commands
 class MoveVertexCommand : public QUndoCommand
 {
 public:
-    MoveVertexCommand(QGraphicsPathItem* pathItem,
-                      int vertexIndex,
+    MoveVertexCommand(int vertexIndex,
                       const QPointF& oldLocalPos,
                       const QPointF& newLocalPos,
                       QUndoCommand* parent = nullptr);
@@ -22,11 +21,10 @@ public:
     void undo() override;
     void redo() override;
 
-private:
-    void updateVertexPosition(const QPointF& localPos);
+protected:
+    virtual void updateVertexPosition(const QPointF& localPos) = 0;
 
-private:
-    QGraphicsPathItem* m_pathItem;
+protected:
     int m_index;
     QPointF m_oldPos;
     QPointF m_newPos;
