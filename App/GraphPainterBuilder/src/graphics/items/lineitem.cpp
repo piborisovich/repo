@@ -7,7 +7,6 @@
 LineItem::LineItem(const QLineF &line,
                    QGraphicsItem *parent)
     : QGraphicsLineItem(line, parent )
-    , m_isMousePressed(false)
 {
     m_vertex = new VertexMarkerItem(this);
 
@@ -49,9 +48,7 @@ void LineItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
         // Активируем или скрываем маркер
         if (bestIndex != -1) {
-            if ( !m_vertex->isVisible() ) {
-                m_vertex->setVertexPos(bestIndex == 0 ? l.p1() :l. p2());
-            }
+            m_vertex->setVertexPos(bestIndex == 0 ? l.p1() :l. p2());
         } else {
             m_vertex->deactivate();
         }
@@ -66,11 +63,6 @@ void LineItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     m_vertex->deactivate();
     QGraphicsLineItem::hoverLeaveEvent(event);
-}
-
-void LineItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsLineItem::mousePressEvent(event);
 }
 
 void LineItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -114,7 +106,6 @@ QVariant LineItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if ( change == ItemSelectedHasChanged && value == false ) {
         m_vertex->deactivate();
-        m_isMousePressed = false;
     } else if ( change == ItemCursorHasChanged ) {
         qDebug() << change;
     }

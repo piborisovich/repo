@@ -47,12 +47,18 @@ public:
     bool isSceneEmpty() const;
 
 protected:
+
+     void drawBackground(QPainter *painter, const QRectF &rect) override;
+
     void wheelEvent(QWheelEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
+
+    static const QBrush DEFAULT_BACKGROUND_BRUSH;
+
     GraphicsScene *m_scene;         //!< Сцена
     QPoint m_origin;
     qreal m_scale;

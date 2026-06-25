@@ -1,14 +1,14 @@
-#ifndef LINEPROPERTIESWIDGET_HPP
-#define LINEPROPERTIESWIDGET_HPP
+#ifndef PATHPROPERTIESWIDGET_HPP
+#define PATHPROPERTIESWIDGET_HPP
 
 #include "itempropertieswidget.hpp"
-#include "lineitem.hpp"
+#include "pathitem.hpp"
 
-class LinePropertiesWidget : public ItemPropertiesWidget
+class PathPropertiesWidget : public ItemPropertiesWidget
 {
     Q_OBJECT
 public:
-    LinePropertiesWidget(LineItem* lineItem,
+    PathPropertiesWidget(PathItem* pathItem,
                          QWidget *parent = nullptr,
                          Qt::WindowFlags flags = Qt::WindowFlags());
 
@@ -16,8 +16,7 @@ public:
     QColor color() const override;
 
 private:
-    LineItem* m_lineItem;
-
+    PathItem* m_pathItem;
 };
 
-#endif // LINEPROPERTIESWIDGET_HPP
+#endif // PATHPROPERTIESWIDGET_HPP

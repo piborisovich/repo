@@ -15,6 +15,8 @@ LineTool::LineTool(QObject *parent) :
 
 void LineTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
 {
+    if ( !scene()->sceneRect().contains(scenePos) ) return;
+
     GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
 
     if ( gScene == nullptr ) return;
@@ -57,6 +59,8 @@ void LineTool::handleMouseRelease(Qt::MouseButton button, const QPointF &scenePo
 void LineTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePos)
 {
     Q_UNUSED(buttons);
+
+    if ( !scene()->sceneRect().contains(scenePos) ) return;
 
     if ( m_previewLine ) {
         m_previewLine->setLine( QLineF (m_startPoint, scenePos ) );

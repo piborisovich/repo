@@ -1,8 +1,9 @@
 #include "propertiesdockwidget.hpp"
 #include "linepropertieswidget.hpp"
 #include "strings.hpp"
-#include "lineitem.hpp"
 
+#include "lineitem.hpp"
+#include "pathitem.hpp"
 
 #include <QVBoxLayout>
 #include <QColorDialog>
@@ -25,7 +26,6 @@ PropertiesDockWidget::PropertiesDockWidget(const QString &title,
     widgetLayout->setContentsMargins(5, 5, 5, 5);
     widgetLayout->addWidget(m_colorButton);
     widgetLayout->addSpacing(10);
-
 
     m_propertiesWidget = createContent(graphicsItem);
 
@@ -72,6 +72,8 @@ ItemPropertiesWidget *PropertiesDockWidget::createContent(QGraphicsItem *item)
     if ( lineItem ) {
         return new LinePropertiesWidget(lineItem);
     }
+
+    PathItem* pathItem =  dynamic_cast<PathItem*>(item);
 
     return nullptr;
 }

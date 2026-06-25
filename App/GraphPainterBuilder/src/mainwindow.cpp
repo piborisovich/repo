@@ -87,6 +87,12 @@ void MainWindow::on_viewScaleChanged(qreal scale)
 
 void MainWindow::on_itemSelected(QGraphicsItem *item)
 {
+    if ( m_propertiesWidget ) {
+        removeDockWidget(m_propertiesWidget);
+        m_propertiesWidget->deleteLater();
+        m_propertiesWidget = nullptr;
+    }
+
     if ( item ) {
         m_propertiesWidget = new PropertiesDockWidget(Strings::PROPERTIES_WIDGET_TITLE,
                                                       item,

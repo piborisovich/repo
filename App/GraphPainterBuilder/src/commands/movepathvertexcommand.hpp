@@ -1,8 +1,8 @@
-#ifndef MOVELINEVERTEXCOMMAND_HPP
-#define MOVELINEVERTEXCOMMAND_HPP
+#ifndef MOVEPATHVERTEXCOMMAND_HPP
+#define MOVEPATHVERTEXCOMMAND_HPP
 
 #include "movevertexcommand.hpp"
-#include "lineitem.hpp"
+#include "pathitem.hpp"
 
 #include <QUndoCommand>
 
@@ -10,12 +10,12 @@ namespace Commands
 {
 
 /*!
- * \brief Команда перетаскивания вершины для линии
+ * \brief Команда перетаскивания вершины для пути
  */
-class MoveLineVertexCommand : public MoveVertexCommand
+class MovePathVertexCommand : public MoveVertexCommand
 {
 public:
-    MoveLineVertexCommand(LineItem *lineItem,
+    MovePathVertexCommand(PathItem *pathItem,
                           int vertexIndex,
                           const QPointF& oldLocalPos,
                           const QPointF& newLocalPos,
@@ -25,9 +25,9 @@ protected:
     virtual void updateVertexPosition(const QPointF& localPos) override;
 
 private:
-    LineItem *m_lineItem;
+    PathItem *m_pathItem;
 };
 
 } //Commands
 
-#endif // MOVELINEVERTEXCOMMAND_HPP
+#endif // MOVEPATHVERTEXCOMMAND_HPP

@@ -26,10 +26,6 @@ void MoveLineVertexCommand::updateVertexPosition(const QPointF& localPos) {
     }
 
     m_lineItem->setLine(line);
-   /* QPainterPath path = m_pathItem->path();
-    // Прямое изменение координат вершины по её индексу в локальной системе координат
-    path.setElementPositionAt(m_index, localPos.x(), localPos.y());
-    m_pathItem->setPath(path);*/
 }
 
 } //Commands

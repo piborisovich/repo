@@ -7,7 +7,8 @@
 #include <QUndoStack>
 
 
-const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(QColor(255, 255, 255));
+const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(Qt::white);
+const QRectF GraphicsScene::DEFAULT_SCENE_RECT = QRectF(0, 0, 800, 600);
 
 GraphicsScene::GraphicsScene(QObject *parent) : QGraphicsScene(parent)
     , m_currentLayerZ(20)
@@ -15,6 +16,7 @@ GraphicsScene::GraphicsScene(QObject *parent) : QGraphicsScene(parent)
     , m_currentTool(nullptr)
     , m_undoStack(new QUndoStack(this))
 {
+    setSceneRect(DEFAULT_SCENE_RECT);
     setBackgroundBrush(BACKGROUND_BRUSH);
 
     auto result = connect(m_undoStack,

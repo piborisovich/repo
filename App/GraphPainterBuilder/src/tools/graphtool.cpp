@@ -3,8 +3,9 @@
 #include "graphtoolsettings.hpp"
 #include "graphtoolsettingswidget.hpp"
 #include "additemcommand.hpp"
+#include "pathitem.hpp"
 
-#include <QGraphicsRectItem>
+#include <QGraphicsDropShadowEffect>
 
 GraphTool::GraphTool(QObject* parent)
     : Tool("Graph",
@@ -171,7 +172,7 @@ void GraphTool::on_startPlot()
 
     painterPath.addPolygon(points);
 
-    auto item = new QGraphicsPathItem(painterPath);
+    auto item = new PathItem(painterPath);
     item->setPen(pen);
     item->setZValue(gScene->currentLayerZ());
 

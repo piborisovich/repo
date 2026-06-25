@@ -75,6 +75,7 @@ private:
     };
 
     static const QBrush BACKGROUND_BRUSH;
+    static const QRectF DEFAULT_SCENE_RECT;
 
     int m_currentLayerZ;
 

@@ -2,7 +2,7 @@
 
 #include <QPen>
 
-LinePropertiesWidget::LinePropertiesWidget(QGraphicsLineItem *lineItem,
+LinePropertiesWidget::LinePropertiesWidget(LineItem *lineItem,
                                            QWidget *parent,
                                            Qt::WindowFlags flags)
     : ItemPropertiesWidget(parent, flags)

@@ -1,17 +1,13 @@
-#ifndef LINEITEM_HPP
-#define LINEITEM_HPP
+#ifndef PATHITEM_HPP
+#define PATHITEM_HPP
 
 #include "vertexmarkeritem.hpp"
+#include <QGraphicsPathItem>
 
-#include <QGraphicsLineItem>
-
-/*!
- * \brief Линия
- */
-class LineItem : public QGraphicsLineItem
+class PathItem : public QGraphicsPathItem
 {
 public:
-    explicit LineItem(const QLineF &line, QGraphicsItem *parent = nullptr);
+    PathItem( const QPainterPath &painterPath, QGraphicsItem *parent = nullptr );
 
 protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
@@ -23,7 +19,10 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
+    int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point);
+
+private:
     VertexMarkerItem* m_vertex;
 };
 
-#endif // LINEITEM_HPP
+#endif // PATHITEM_HPP

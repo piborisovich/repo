@@ -3,21 +3,23 @@
 #include <QScrollBar>
 #include <QWheelEvent>
 
-static const QRectF DEFAULT_SCENE_RECT( QPointF(0,0), QSizeF(800, 600) );
 static const qreal DEFAULT_SCALE_CHANGED_STEP_UP = 1.25;
 static const qreal DEFAULT_SCALE_CHANGED_STEP_DOWN = 0.8;
 
+const QBrush GraphicsView::DEFAULT_BACKGROUND_BRUSH = QBrush(QColor(230, 230, 230));
+
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
-    , m_scene( new GraphicsScene(this) )
+    , m_scene( new GraphicsScene() )
     , m_scale(1.0)
 {
+    setBackgroundBrush(DEFAULT_BACKGROUND_BRUSH);
+
     setScene(m_scene);
     setMouseTracking(true);
     setUpdatesEnabled(true);
-    setSceneRect( DEFAULT_SCENE_RECT );
     setRenderHint( QPainter::Antialiasing );
 
-    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    setAlignment(Qt::AlignCenter);
 
     auto result = connect(m_scene,
                           &GraphicsScene::canUndoChanged,
@@ -125,6 +127,18 @@ void GraphicsView::clear()
 bool GraphicsView::isSceneEmpty() const
 {
     return m_scene->items().isEmpty();
+}
+
+void GraphicsView::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    QGraphicsView::drawBackground(painter, rect);
+
+    // Задаем цвет и заливку для рабочей области (sceneRect)
+    painter->setBrush( m_scene->backgroundBrush() );
+    painter->setPen(Qt::NoPen);
+
+    // Рисуем прямоугольник размером с рабочую область
+    painter->drawRect(sceneRect());
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
