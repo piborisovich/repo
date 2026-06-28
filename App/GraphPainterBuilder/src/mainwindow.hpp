@@ -3,15 +3,20 @@
 
 #include "core.hpp"
 #include "iscenelistener.hpp"
+#include "graphicsview.hpp"
+#include "layerswidget.hpp"
+#include "toolswidget.hpp"
+#include "propertiesdockwidget.hpp"
 
 #include <QDateTime>
+#include <QDockWidget>
 #include <QListWidget>
 #include <QPushButton>
 #include <QUndoStack>
 
 #define logDebug() qDebug().noquote() << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz")
 
-#include "graphicsscene.hpp"
+
 
 #include <QLabel>
 #include <QMainWindow>
@@ -30,8 +35,13 @@ public:
     MainWindow(Core *core, QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_openTriggered();
+private Q_SLOTS:
+    void on_imageImportTriggered();   //!< Импорт
+    void on_exportToImageTriggered(); //!< Экспорт
+    void on_clearCanvasTriggered();   //!< Очистить сцену
+    void on_viewScaleChanged(qreal scale);     //!< Масштаб представления изменен
+    void on_itemSelected(QGraphicsItem* item); //!< Графический элемент выделен
+    void on_itemDeselected();                  //!< Снято выделение с графисекого элемента
 
 private:
     void init();
@@ -40,22 +50,17 @@ private:
     void mouseReleased(Qt::MouseButton button, const QPointF &scenePos) override;
     void mouseMoved(const QPointF &scenePos) override;
 
-    void updateColorButtonLayout(QColor color);
-
 private:
 
     Ui::MainWindow *ui;
-    QUndoStack *m_undoStack;  //Стек команд для отмены
-    GraphicsScene *m_scene; //Сцена
-    QGraphicsView *m_view;  //Представление
-    QLabel *m_statusLabel;
-
-    QListWidget *m_layersList; //Слои
-    QPushButton *m_colorButton;
-
-    int m_nextLayerZ;
-
     Core *m_core;
 
+    GraphicsView *m_view;   //!< Представление
+    QLabel *m_xyLabel;
+    QLabel *m_scaleLabel;
+
+    ToolsWidget *m_toolsWidget;   //!< Инструменты
+    LayersWidget *m_layersWidget;    //!< Слои;
+    PropertiesDockWidget *m_propertiesWidget; //!< Свойства графического элемента
 };
 #endif // MAINWINDOW_HPP

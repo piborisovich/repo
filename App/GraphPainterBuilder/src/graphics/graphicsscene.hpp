@@ -8,34 +8,63 @@
 #include <QUndoStack>
 #include <QList>
 
+class ITool;
+
+/*!
+ * \brief Сцена
+ */
 class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GraphicsScene(QUndoStack *undoStack = nullptr, QObject *parent = nullptr);
+    GraphicsScene(QObject *parent = nullptr);
+    ~GraphicsScene() override;
 
+Q_SIGNALS:
+    void canUndoChanged(bool canUndo);
+    void canRedoChanged(bool canRedo);
+    void itemSelected(QGraphicsItem* item);
+    void itemDeselected();
+
+public Q_SLOTS:
+    void undo();
+    void redo();
+
+public:
     void addSceneListener(ISceneListener* listener);
     void removeSceneListener(ISceneListener* listener);
 
     int currentLayerZ() const;
     void setCurrentLayerZ(int newCurrentLayerZ);
 
-    QString currentTool() const;
-    void setCurrentTool(const QString &newCurrentTool);
+    void clearLayer(int layerZ);
 
-    int brushSize() const;
-    void setBrushSize(int newBrushSize);
+    void changeCurrentTool(ITool *tool);
+    /*!
+     * \brief addImage
+     * \param path - Image path
+     * \param imageSize - opened image size (return)
+     */
+    void addImage(const QString &path, QSize &imageSize);
 
     QColor currentColor() const;
     void setCurrentColor(const QColor &newCurrentColor);
+
+    /*!
+     * \brief add Item to scene and create undo command
+     * \param command
+     */
+    void addSceneCommand(QUndoCommand *command);
+
+    void clearScene();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-private:
-    void processDrawing(QPointF pos);
+private Q_SLOTS:
+    void on_selectionChanged();
 
 private:
 
@@ -47,17 +76,15 @@ private:
     };
 
     static const QBrush BACKGROUND_BRUSH;
+    static const QRectF DEFAULT_SCENE_RECT;
 
     int m_currentLayerZ;
-    int m_brushSize;
+
     QColor m_currentColor;
-    QString m_currentTool;
-    QUndoStack *m_undoStack;
 
+    ITool* m_currentTool;
 
-    QPointF m_startPoint;
-    QGraphicsLineItem *m_previewLine = nullptr;
-    QList<QGraphicsItem*> m_erasedItemsThisStroke; //!< Для группировки удаления ластиком
+    QUndoStack* m_undoStack;
 
     QList<ISceneListener*> m_listeners;
 };

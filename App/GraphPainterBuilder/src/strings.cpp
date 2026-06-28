@@ -11,17 +11,12 @@ namespace Strings
 
 const char *APPLICATION_NAME = "Graph Painter Builder";
 
-const char *UNDO_TEXT = "↩ Undo";
-const char *REDO_TEXT = "↪ Redo";
-
-const char *TOOL_TEXT = "<b>Tool:</b>";
+const char *TOOLS_TEXT = "Tools";
 const char *BRUSH_SIZE_TEXT = "<b>Brush size/border:</b>";
 const char *PALETTE_TEXT = "<b>Palette:</b>";
+const char *PROPERTIES_WIDGET_TITLE = "Properties";
 
-const char *EXPORT_TEXT = "Export to image";
-const char *CLEAR_CANVAS_TEXT = "Clear the canvas";
-
-const char *LAYERS_TITLE = "<b>Layers (Z-Index):</b>";
+const char *LAYERS_TITLE = "Layers (Z-Index)";
 const char *LAYER_NAME_1 = "Layer 1 (Bottom)";
 const char *LAYER_NAME_2 = "Layer 2 (Middle)";
 const char *LAYER_NAME_3 = "Layer 3 (Top)";
@@ -47,6 +42,7 @@ const char *CLEAR_CANVAS_MSG_BOX_QUESTION = "Are you sure you want "
                                             "to clear the canvas? "
                                             "(Undo history will be reset)";
 
+const char *OPEN_IMAGE_DIALOIG_TITLE = "Image import";
 const char *SAVE_IMAGE_DIALOIG_TITLE = "Image export";
 
 const char *SAVE_SUCCESS_MSG_BOX_TITLE = "Success";

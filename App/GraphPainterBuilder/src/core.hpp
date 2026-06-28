@@ -3,6 +3,9 @@
 
 #define logDebug() qDebug().noquote() << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz")
 
+#include "toollist.hpp"
+#include "graphicsscene.hpp"
+
 #include <QApplication>
 
 class Core : public QApplication
@@ -14,10 +17,12 @@ public:
 
     ~Core();
 
-public slots:
-    void on_ImageOpen();
+    static const ToolList &tools();
+    static void changeSceneForTools(GraphicsScene *scene);
 
 private:
     Q_DISABLE_COPY(Core)
+
+    static ToolList _tools;
 };
 #endif // CORE_HPP
