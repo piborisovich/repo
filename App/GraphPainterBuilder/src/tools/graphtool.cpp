@@ -24,6 +24,8 @@ GraphTool::GraphTool(QObject* parent)
                               &GraphTool::on_startPlot);
         Q_ASSERT(result);
     }
+
+
 }
 
 void GraphTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
@@ -46,12 +48,20 @@ void GraphTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePo
 
 void GraphTool::select()
 {
-    auto gScene = qobject_cast<GraphicsScene*>(scene());
-    auto graphSettings = dynamic_cast<GraphToolSettings*>(settings().get());
+    Tool::select();
 
-    if ( graphSettings == nullptr || gScene == nullptr ) return;
+    auto scn = scene();
+    auto graphSettings = std::dynamic_pointer_cast<GraphToolSettings>(settings());
+
+
+    if ( !graphSettings || scn == nullptr ) return;
 
     auto bRect = graphSettings->boundingRect();
+
+    if ( bRect.isNull() ) {
+        bRect = scn->sceneRect();
+        graphSettings->setBoundingRect(bRect);
+    }
 
     m_xCursors = std::make_pair( new ConstraintLineItem( QPointF(bRect.left(), scene()->height()) ),
                                  new ConstraintLineItem( QPointF(bRect.right(), scene()->height()) ) );
@@ -60,11 +70,11 @@ void GraphTool::select()
                                  new ConstraintLineItem(QPointF(scene()->width(), bRect.bottom()), Qt::Horizontal));
 
 
-    m_xCursors.first->setZValue(gScene->currentLayerZ());
-    m_xCursors.second->setZValue(gScene->currentLayerZ());
+    m_xCursors.first->setZValue(scn->currentLayerZ());
+    m_xCursors.second->setZValue(scn->currentLayerZ());
 
-    m_yCursors.first->setZValue(gScene->currentLayerZ());
-    m_yCursors.second->setZValue(gScene->currentLayerZ());
+    m_yCursors.first->setZValue(scn->currentLayerZ());
+    m_yCursors.second->setZValue(scn->currentLayerZ());
 
     scene()->addItem(m_xCursors.first);
     scene()->addItem(m_xCursors.second);
@@ -119,9 +129,9 @@ void GraphTool::on_cursorPositionChanged(const QPointF &point)
 {
     Q_UNUSED(point);
 
-    auto graphSettings = dynamic_cast<GraphToolSettings*>(settings().get());
+    auto graphSettings = std::dynamic_pointer_cast<GraphToolSettings>(settings());
 
-    if ( graphSettings != nullptr ) {
+    if ( graphSettings ) {
         qreal minX = m_xCursors.first->point().x();
         qreal maxX = m_xCursors.second->point().x();
         qreal minY = m_yCursors.first->point().y();
@@ -143,16 +153,16 @@ void GraphTool::on_cursorPositionChanged(const QPointF &point)
 
 void GraphTool::on_startPlot()
 {
-    auto gScene = qobject_cast<GraphicsScene*>(scene());
+    auto scn = scene();
     auto graphSettings = dynamic_cast<GraphToolSettings*>(settings().get());
 
-    if ( gScene == nullptr ) return;
+    if ( scn == nullptr ) return;
     if ( graphSettings == nullptr) return;
 
     QRectF rect = graphSettings->boundingRect();
     QList<QPointF> points;
 
-    QPen pen(gScene->currentColor(),
+    QPen pen(scn->currentColor(),
              graphSettings->brushSize(),
              Qt::SolidLine,
              Qt::RoundCap,
@@ -174,9 +184,9 @@ void GraphTool::on_startPlot()
 
     auto item = new PathItem(painterPath);
     item->setPen(pen);
-    item->setZValue(gScene->currentLayerZ());
+    item->setZValue(scn->currentLayerZ());
 
-    gScene->addSceneCommand(new Commands::AddItemCommand(scene(),item));
+    scn->addSceneCommand(new Commands::AddItemCommand(scene(),item));
 }
 
 void GraphTool::removeFromScene()

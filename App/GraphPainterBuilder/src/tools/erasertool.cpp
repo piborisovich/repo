@@ -1,6 +1,7 @@
 #include "erasertool.hpp"
 #include "graphicsscene.hpp"
 #include "macrodeletecommand.hpp"
+#include "qforeach.h"
 
 #include <QRectF>
 
@@ -45,22 +46,24 @@ void EraserTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &sceneP
 
 void EraserTool::processDrawing(QPointF pos)
 {
-    GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+    GraphicsScene *scn = scene();
 
-    if ( gScene == nullptr ) return;
+    if ( scn ) {
 
-    auto brushSize = settings()->brushSize();
+        auto brushSize = settings()->brushSize();
 
-    QList<QGraphicsItem*> itemsAtPos = scene()->items( QRectF( pos.x() - brushSize/2.0,
-                                                              pos.y() - brushSize/2.0,
-                                                              brushSize,
-                                                              brushSize ) );
-    for (QGraphicsItem *item : itemsAtPos) {
-        if ( item->zValue() == gScene->currentLayerZ() &&
-            !m_erasedItems.contains(item) ) {
-            scene()->removeItem(item); // Убираем со сцены визуально
-            m_erasedItems.append(item); // Запоминаем для Undo
+        QList<QGraphicsItem*> itemsAtPos = scene()->items( QRectF( pos.x() - brushSize/2.0,
+                                                                  pos.y() - brushSize/2.0,
+                                                                  brushSize,
+                                                                  brushSize ) );
+        foreach(QGraphicsItem *item, itemsAtPos) {
+            if ( item->zValue() == scn->currentLayerZ() &&
+                !m_erasedItems.contains(item) ) {
+                scn->removeItem(item); // Убираем со сцены визуально
+                m_erasedItems.append(item); // Запоминаем для Undo
+            }
         }
+
     }
 
 }

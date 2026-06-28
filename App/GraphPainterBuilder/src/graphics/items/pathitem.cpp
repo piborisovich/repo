@@ -51,10 +51,13 @@ void PathItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         QPointF newpoint = QPointF(elem) + dxdy;
 
-        m_vertex->setVertexPos(newpoint);
+        if ( scene()->sceneRect().contains(newpoint) ) {
 
-        p.setElementPositionAt(m_vertex->vertexIndex(), newpoint.x(), newpoint.y());
-        setPath(p);
+            m_vertex->setVertexPos(newpoint);
+
+            p.setElementPositionAt(m_vertex->vertexIndex(), newpoint.x(), newpoint.y());
+            setPath(p);
+        }
 
         return;
     }
@@ -80,8 +83,6 @@ QVariant PathItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if ( change == ItemSelectedHasChanged && value == false ) {
         m_vertex->deactivate();
-    } else if ( change == ItemCursorHasChanged ) {
-        qDebug() << change;
     }
     return QGraphicsPathItem::itemChange(change, value);
 }

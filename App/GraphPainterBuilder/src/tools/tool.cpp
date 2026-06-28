@@ -34,12 +34,12 @@ Tool::Tool(const QString &name,
     Q_ASSERT(result);
 }
 
-QGraphicsScene *Tool::scene()
+GraphicsScene *Tool::scene()
 {
     return m_scene;
 }
 
-void Tool::setScene(QGraphicsScene *scene)
+void Tool::setScene(GraphicsScene *scene)
 {
     m_scene = scene;
 }
@@ -70,11 +70,14 @@ void Tool::select()
 {
     if ( m_scene ) {
 
-        auto allItems = m_scene->items();
+        const auto allItems = m_scene->items();
 
-        for (QGraphicsItem *item : allItems) {
+        // clazy:excludeall=range-loop-detach
+        for ( QGraphicsItem * item : allItems ) {
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
             item->setFlag(QGraphicsItem::ItemIsMovable, false);
+
+            item->setSelected(false);
         }
     }
 }
@@ -86,7 +89,7 @@ void Tool::unselect()
 void Tool::on_buttonClicked(bool checked)
 {
     if ( m_scene ) {
-        GraphicsScene *gs = qobject_cast<GraphicsScene *>(m_scene);
+        GraphicsScene *gs = scene();
         if ( gs ) {
             if ( checked ) {
                 gs->changeCurrentTool(this);

@@ -38,6 +38,10 @@ GraphicsScene::GraphicsScene(QObject *parent) : QGraphicsScene(parent)
     Q_ASSERT(result);
 }
 
+GraphicsScene::~GraphicsScene()
+{
+}
+
 void GraphicsScene::undo()
 {
     m_undoStack->undo();
@@ -65,12 +69,16 @@ void GraphicsScene::removeSceneListener(ISceneListener *listener)
 void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     auto pos = event->scenePos();
-    foreach (auto *listener, m_listeners) {
-        listener->mousePressed( event->button(), pos );
-    }
 
-    if ( m_currentTool ) {
-        m_currentTool->handleMousePress( event->button(), pos );
+    if ( sceneRect().contains(pos) ) {
+
+        foreach (auto *listener, m_listeners) {
+            listener->mousePressed( event->button(), pos );
+        }
+
+        if ( m_currentTool ) {
+            m_currentTool->handleMousePress( event->button(), pos );
+        }
     }
 
     QGraphicsScene::mousePressEvent(event);
@@ -80,12 +88,15 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     auto pos = event->scenePos();
 
-    foreach (auto *listener, m_listeners) {
-        listener->mouseMoved( pos );
-    }
+    if ( sceneRect().contains(pos) ) {
 
-    if ( m_currentTool ) {
-        m_currentTool->handleMouseMove( event->buttons(), pos );
+        foreach (auto *listener, m_listeners) {
+            listener->mouseMoved( pos );
+        }
+
+        if ( m_currentTool ) {
+            m_currentTool->handleMouseMove( event->buttons(), pos );
+        }
     }
 
     QGraphicsScene::mouseMoveEvent(event);
@@ -208,7 +219,7 @@ void GraphicsScene::clearLayer(int layerZ)
         m_currentTool->unselect();
     }
 
-    QList<QGraphicsItem*> allItems = items();
+    const QList<QGraphicsItem*> allItems = items();
 
     for (QGraphicsItem *item : allItems) {
         if (item->zValue() == layerZ) {

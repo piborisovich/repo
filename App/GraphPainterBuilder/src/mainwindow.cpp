@@ -264,7 +264,7 @@ void MainWindow::init()
 
     ui->actionLayer_panel->setChecked(true);
 
-    m_core->changeSceneForTools( m_view->scene() );
+    m_core->changeSceneForTools( qobject_cast<GraphicsScene*>(m_view->scene()) );
 }
 
 void MainWindow::mousePressed(Qt::MouseButton button, const QPointF &scenePos)

@@ -48,11 +48,11 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
 
 GraphicsView::~GraphicsView()
 {
-    if ( m_scene ) {
+    /*if ( m_scene ) {
         m_scene->clearSelection();
         m_scene->setFocusItem(nullptr);
         m_scene->clear();
-    }
+    }*/
 }
 
 void GraphicsView::undo()

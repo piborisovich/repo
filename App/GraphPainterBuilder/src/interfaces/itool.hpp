@@ -2,8 +2,8 @@
 #define ITOOL_HPP
 
 #include "toolsettings.hpp"
+#include "graphicsscene.hpp"
 
-#include <QGraphicsScene>
 #include <QPointF>
 #include <QCursor>
 #include <QPixmap>
@@ -26,8 +26,8 @@ Q_SIGNALS:
     void colorChangeRequested(const QColor &color);
 
 public:
-    virtual QGraphicsScene *scene() = 0;
-    virtual void setScene(QGraphicsScene *scene) = 0;
+    virtual GraphicsScene *scene() = 0;
+    virtual void setScene(GraphicsScene *scene) = 0;
 
     virtual QToolButton *button() = 0;
 

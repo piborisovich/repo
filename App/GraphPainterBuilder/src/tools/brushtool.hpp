@@ -18,6 +18,9 @@ public:
 private:
     void processDrawing(QPointF pos);
 
+private:
+    QList<QGraphicsItem*> m_brushItems;
+
 };
 
 #endif // BRUSHTOOL_HPP

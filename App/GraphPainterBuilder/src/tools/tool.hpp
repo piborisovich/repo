@@ -16,8 +16,8 @@ public:
                   const QString &iconPath = QString(),
                   QObject* parent = nullptr);
 
-    QGraphicsScene *scene() override;
-    void setScene(QGraphicsScene *scene) override;
+    GraphicsScene *scene() override;
+    void setScene(GraphicsScene *scene) override;
 
     const QCursor &getCursor() const override;
 
@@ -41,7 +41,7 @@ private:
     QWidget *m_settingsWidget;
 
     QToolButton *m_button;
-    QGraphicsScene *m_scene;
+    GraphicsScene *m_scene;
 };
 
 #endif // TOOL_HPP

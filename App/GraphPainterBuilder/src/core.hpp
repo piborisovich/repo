@@ -4,9 +4,9 @@
 #define logDebug() qDebug().noquote() << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz")
 
 #include "toollist.hpp"
+#include "graphicsscene.hpp"
 
 #include <QApplication>
-#include <QGraphicsScene>
 
 class Core : public QApplication
 {
@@ -18,7 +18,7 @@ public:
     ~Core();
 
     static const ToolList &tools();
-    static void changeSceneForTools(QGraphicsScene *scene);
+    static void changeSceneForTools(GraphicsScene *scene);
 
 private:
     Q_DISABLE_COPY(Core)

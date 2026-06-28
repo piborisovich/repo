@@ -33,13 +33,13 @@ void RectangleTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &sce
 
 void RectangleTool::processDrawing(QPointF pos)
 {
-    GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+    GraphicsScene *scn = scene();
 
-    if ( gScene == nullptr ) return;
+    if ( scn == nullptr ) return;
 
     auto brushSize = settings()->brushSize();
 
-    QPen pen(gScene->currentColor(),
+    QPen pen(scn->currentColor(),
              brushSize,
              Qt::SolidLine,
              Qt::RoundCap,
@@ -48,7 +48,7 @@ void RectangleTool::processDrawing(QPointF pos)
     QGraphicsItem *newItem = new QGraphicsRectItem(pos.x() - 25, pos.y() - 25, 50, 50);
     static_cast<QGraphicsRectItem*>(newItem)->setPen(pen);
 
-    newItem->setZValue(gScene->currentLayerZ());
+    newItem->setZValue(scn->currentLayerZ());
     // Регистрируем создание объекта в системе Undo/Redo
-    gScene->addSceneCommand( new Commands::AddItemCommand(scene(), newItem));
+    scn->addSceneCommand( new Commands::AddItemCommand(scene(), newItem));
 }

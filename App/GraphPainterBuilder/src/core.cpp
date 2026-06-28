@@ -33,7 +33,7 @@ const ToolList &Core::tools()
     return _tools;
 }
 
-void Core::changeSceneForTools(QGraphicsScene *scene)
+void Core::changeSceneForTools(GraphicsScene *scene)
 {
     for ( auto &tool : _tools ) {
         if ( tool ) {

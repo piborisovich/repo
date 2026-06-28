@@ -74,13 +74,17 @@ void LineItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         if ( m_vertex->vertexIndex() == 0 ) {
             l.setP1(l.p1() + dxdy);
-            m_vertex->setVertexPos(l.p1());
-            setLine(l);
+            if ( scene()->sceneRect().contains(l.p1()) ) {
+                m_vertex->setVertexPos(l.p1());
+                setLine(l);
+            }
             return;
         } else if ( m_vertex->vertexIndex() == 1 ) {
             l.setP2(l.p2() + dxdy);
-            m_vertex->setVertexPos(l.p2());
-            setLine(l);
+            if ( scene()->sceneRect().contains(l.p2()) ) {
+                m_vertex->setVertexPos(l.p2());
+                setLine(l);
+            }
             return;
         }
     }
@@ -106,8 +110,6 @@ QVariant LineItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if ( change == ItemSelectedHasChanged && value == false ) {
         m_vertex->deactivate();
-    } else if ( change == ItemCursorHasChanged ) {
-        qDebug() << change;
     }
     return QGraphicsLineItem::itemChange(change, value);
 }

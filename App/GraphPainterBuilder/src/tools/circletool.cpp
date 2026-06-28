@@ -33,22 +33,23 @@ void CircleTool::handleMouseMove(Qt::MouseButtons buttons, const QPointF &sceneP
 
 void CircleTool::processDrawing(QPointF pos)
 {
-    GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+    GraphicsScene *scn = scene();
 
-    if ( gScene == nullptr ) return;
+    if ( scn ) {
 
-    auto brushSize = settings()->brushSize();
+        auto brushSize = settings()->brushSize();
 
-    QPen pen(gScene->currentColor(),
-             brushSize,
-             Qt::SolidLine,
-             Qt::RoundCap,
-             Qt::RoundJoin);
+        QPen pen(scn->currentColor(),
+                 brushSize,
+                 Qt::SolidLine,
+                 Qt::RoundCap,
+                 Qt::RoundJoin);
 
-    QGraphicsItem *newItem = new QGraphicsEllipseItem(pos.x() - 25, pos.y() - 25, 50, 50);
-    static_cast<QGraphicsEllipseItem*>(newItem)->setPen(pen);
+        QGraphicsItem *newItem = new QGraphicsEllipseItem(pos.x() - 25, pos.y() - 25, 50, 50);
+        static_cast<QGraphicsEllipseItem*>(newItem)->setPen(pen);
 
-    newItem->setZValue(gScene->currentLayerZ());
-    // Регистрируем создание объекта в системе Undo/Redo
-    gScene->addSceneCommand( new Commands::AddItemCommand(scene(), newItem));
+        newItem->setZValue(scn->currentLayerZ());
+        // Регистрируем создание объекта в системе Undo/Redo
+        scn->addSceneCommand( new Commands::AddItemCommand(scene(), newItem));
+    }
 }
