@@ -1,11 +1,11 @@
 INCLUDEPATH += $$PWD
 
 include($$PWD/gui/gui.pri)
+include($$PWD/settings/settings.pri)
 
 HEADERS += \
     $$PWD/dragtool.hpp \
     $$PWD/graphtool.hpp \
-    $$PWD/graphtoolsettings.hpp \
     $$PWD/pipettetool.hpp \
     $$PWD/selecttool.hpp \
     $$PWD/tool.hpp \
@@ -15,14 +15,11 @@ HEADERS += \
     $$PWD/erasertool.hpp \
     $$PWD/linetool.hpp \
     $$PWD/toollist.hpp \
-    $$PWD/rectangletool.hpp \
-    $$PWD/toolsettings.hpp \
-    $$PWD/toolswidget.hpp \
-    $$PWD/toolwidget.hpp
+    $$PWD/rectangletool.hpp
+
 SOURCES += \
     $$PWD/dragtool.cpp \
     $$PWD/graphtool.cpp \
-    $$PWD/graphtoolsettings.cpp \
     $$PWD/pipettetool.cpp \
     $$PWD/selecttool.cpp \
     $$PWD/tool.cpp \
@@ -31,9 +28,7 @@ SOURCES += \
     $$PWD/toolcreator.cpp \
     $$PWD/erasertool.cpp \
     $$PWD/linetool.cpp \
-    $$PWD/rectangletool.cpp \
-    $$PWD/toolsettings.cpp \
-    $$PWD/toolswidget.cpp \
-    $$PWD/toolwidget.cpp
+    $$PWD/rectangletool.cpp
+
 FORMS   +=
 

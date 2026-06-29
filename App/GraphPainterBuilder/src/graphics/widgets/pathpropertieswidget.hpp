@@ -12,9 +12,6 @@ public:
                          QWidget *parent = nullptr,
                          Qt::WindowFlags flags = Qt::WindowFlags());
 
-    void setColor(const QColor &color) override;
-    QColor color() const override;
-
 private:
     PathItem* m_pathItem;
 };

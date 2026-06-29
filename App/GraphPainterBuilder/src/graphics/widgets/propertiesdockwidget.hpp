@@ -16,17 +16,10 @@ public:
                          QWidget *parent = nullptr,
                          Qt::WindowFlags flags = Qt::WindowFlags());
 
-protected:
-    void setColor(const QColor &color);
-
-private Q_SLOTS:
-    void on_colorClicked();
-
 private:
     static ItemPropertiesWidget* createContent(QGraphicsItem* item);
 
 private:
-    QPushButton *m_colorButton;
     ItemPropertiesWidget *m_propertiesWidget;
 };
 

@@ -1,21 +1,15 @@
 INCLUDEPATH += $$PWD
 
 include($$PWD/items/items.pri)
+include($$PWD/widgets/widgets.pri)
 
 HEADERS += \
            $$PWD/graphicsview.hpp \
-           $$PWD/graphicsscene.hpp \
-           $$PWD/itempropertieswidget.hpp \
-           $$PWD/pathpropertieswidget.hpp \
-           $$PWD/propertiesdockwidget.hpp \
-           $$PWD/linepropertieswidget.hpp
+           $$PWD/graphicsscene.hpp
+
 SOURCES += \
            $$PWD/graphicsview.cpp \
-           $$PWD/graphicsscene.cpp \
-           $$PWD/itempropertieswidget.cpp \
-           $$PWD/pathpropertieswidget.cpp \
-           $$PWD/propertiesdockwidget.cpp \
-           $$PWD/linepropertieswidget.cpp
+           $$PWD/graphicsscene.cpp
 
 FORMS   +=
 
