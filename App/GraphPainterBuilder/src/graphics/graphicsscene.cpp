@@ -195,10 +195,16 @@ void GraphicsScene::addImage(const QString & path, QSize &imageSize)
     }
 
     if ( newItem ) {
+        QRectF sr = sceneRect();
+
         newItem->setZValue(m_currentLayerZ);
         imageSize = pixmap.size();
         //newItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
         m_undoStack->push(new Commands::AddItemCommand(this, newItem));
+
+        setSceneRect( QRectF( QPointF(0, 0),
+                            QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
+                                   qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
     }
 
 }

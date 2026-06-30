@@ -10,6 +10,10 @@ SelectTool::SelectTool(QObject *parent) :
          parent)
 {
     settings()->setDragMode(QGraphicsView::RubberBandDrag);
+
+    if ( settingsWidget() ) {
+        settingsWidget()->setVisible(false);
+    }
 }
 
 void SelectTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)

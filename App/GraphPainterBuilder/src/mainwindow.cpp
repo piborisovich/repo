@@ -1,8 +1,11 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
+#include "blureffectwidget.hpp"
+
 #include "strings.hpp"
 
+#include <QGraphicsBlurEffect>
 #include <QFileDialog>
 #include <QComboBox>
 #include <QColorDialog>
@@ -78,6 +81,36 @@ void MainWindow::on_clearCanvasTriggered()
     if (result == QMessageBox::Yes) {
         m_view->clear();
     }
+}
+
+void MainWindow::on_blurEffectTriggered()
+{
+    BlurEffectWidget *blurEffectWidget = new BlurEffectWidget(this);
+    auto scene = m_view->scene();
+
+    auto result = connect(blurEffectWidget,
+                          &BlurEffectWidget::applyRadius,
+                          this,
+                          [scene](int radius){
+
+                              const auto selectedItems = scene->selectedItems();
+
+                              for ( auto item : selectedItems ) {
+                                  // 1. Initialize the blur effect
+                                  QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
+                                  // 2. Set the blur radius (higher number = more blur)
+                                  blurEffect->setBlurRadius(radius);
+                                  // 3. (Optional) Set performance hints for animations or quality
+                                  blurEffect->setBlurHints(QGraphicsBlurEffect::QualityHint);
+                                  // 4. Apply the effect directly to the widget
+                                  item->setGraphicsEffect(blurEffect);
+                              }
+                          });
+    Q_ASSERT(result);
+
+    blurEffectWidget->setAttribute(Qt::WA_DeleteOnClose);
+
+    blurEffectWidget->show();
 }
 
 void MainWindow::on_viewScaleChanged(qreal scale)
@@ -246,6 +279,12 @@ void MainWindow::init()
                      &ToolsWidget::colorPickerClicked,
                      m_view,
                      &GraphicsView::setCurrentrColor);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionBlurEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_blurEffectTriggered);
     Q_ASSERT(result);
 
     for ( auto &tool : m_core->tools() ) {

@@ -1,9 +1,13 @@
 #include "propertiesdockwidget.hpp"
 #include "linepropertieswidget.hpp"
 #include "pathpropertieswidget.hpp"
+#include "circlepropertieswidget.hpp"
+#include "rectpropertieswidget.hpp"
 
 #include "lineitem.hpp"
 #include "pathitem.hpp"
+#include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 
 #include <QVBoxLayout>
 #include <QColorDialog>
@@ -41,6 +45,18 @@ ItemPropertiesWidget *PropertiesDockWidget::createContent(QGraphicsItem *item)
 
     if ( pathItem ) {
         return new PathPropertiesWidget(pathItem);
+    }
+
+    QGraphicsEllipseItem* ellipseItem =  dynamic_cast<QGraphicsEllipseItem*>(item);
+
+    if ( ellipseItem ) {
+        return new CirclePropertiesWidget(ellipseItem);
+    }
+
+    QGraphicsRectItem* rectItem =  dynamic_cast<QGraphicsRectItem*>(item);
+
+    if ( rectItem ) {
+        return new RectPropertiesWidget(rectItem);
     }
 
     return nullptr;

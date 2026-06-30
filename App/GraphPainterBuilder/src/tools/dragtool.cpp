@@ -8,6 +8,10 @@ DragTool::DragTool(QObject *parent) :
          parent)
 {
     settings()->setDragMode(QGraphicsView::ScrollHandDrag);
+
+    if ( settingsWidget() ) {
+        settingsWidget()->setVisible(false);
+    }
 }
 
 const QCursor &DragTool::getCursor() const
