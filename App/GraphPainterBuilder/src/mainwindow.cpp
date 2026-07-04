@@ -1,7 +1,8 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
-#include "blureffectwidget.hpp"
+#include "effectwidget.hpp"
+#include "graphicspixelateeffect.hpp"
 
 #include "strings.hpp"
 
@@ -85,14 +86,14 @@ void MainWindow::on_clearCanvasTriggered()
 
 void MainWindow::on_blurEffectTriggered()
 {
-    BlurEffectWidget *blurEffectWidget = new BlurEffectWidget(this);
+    EffectWidget<QGraphicsBlurEffect> *blurEffectWidget = new EffectWidget<QGraphicsBlurEffect>(this);
+    blurEffectWidget->setWindowTitle("Blur");
     auto scene = m_view->scene();
 
     auto result = connect(blurEffectWidget,
-                          &BlurEffectWidget::applyRadius,
+                          &EffectWidget<QGraphicsBlurEffect>::apply,
                           this,
                           [scene](int radius){
-
                               const auto selectedItems = scene->selectedItems();
 
                               for ( auto item : selectedItems ) {
@@ -111,6 +112,49 @@ void MainWindow::on_blurEffectTriggered()
     blurEffectWidget->setAttribute(Qt::WA_DeleteOnClose);
 
     blurEffectWidget->show();
+}
+
+void MainWindow::on_dropShadowTriggered()
+{
+
+}
+
+void MainWindow::on_colorizeEffectTriggered()
+{
+
+}
+
+void MainWindow::on_opacityEffectTriggered()
+{
+
+}
+
+void MainWindow::on_pixelationEffectTriggered()
+{
+    EffectWidget<GraphicsPixelateEffect> *pixelateEffectWidget = new EffectWidget<GraphicsPixelateEffect>(this);
+    pixelateEffectWidget->setWindowTitle("Pixelate");
+    auto scene = m_view->scene();
+
+    auto result = connect(pixelateEffectWidget,
+                          &EffectWidget<QGraphicsBlurEffect>::apply,
+                          this,
+                          [scene](int radius){
+                              const auto selectedItems = scene->selectedItems();
+
+                              for ( auto item : selectedItems ) {
+
+                                  GraphicsPixelateEffect *pixelateEffect = new GraphicsPixelateEffect();
+
+                                  pixelateEffect->setPixelSize(radius);
+
+                                  item->setGraphicsEffect(pixelateEffect);
+                              }
+                          });
+    Q_ASSERT(result);
+
+    pixelateEffectWidget->setAttribute(Qt::WA_DeleteOnClose);
+
+    pixelateEffectWidget->show();
 }
 
 void MainWindow::on_viewScaleChanged(qreal scale)
@@ -285,6 +329,30 @@ void MainWindow::init()
                      &QAction::triggered,
                      this,
                      &MainWindow::on_blurEffectTriggered);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionDropShadowEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_dropShadowTriggered);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionColorizeEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_colorizeEffectTriggered);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionOpacityEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_opacityEffectTriggered);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionPixelationEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_pixelationEffectTriggered);
     Q_ASSERT(result);
 
     for ( auto &tool : m_core->tools() ) {

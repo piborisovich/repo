@@ -1,12 +1,14 @@
-#include "blureffectwidget.hpp"
-#include "ui_blureffectwidget.h"
+#include "baseeffectwidget.hpp"
+#include "ui_baseeffectwidget.h"
 
-BlurEffectWidget::BlurEffectWidget(QWidget *parent)
+#include <QDialogButtonBox>
+
+BaseEffectWidget::BaseEffectWidget(
+    QWidget *parent)
     : QWidget(parent, Qt::Window)
-    , ui(new Ui::BlurEffectWidget)
+    , ui(new Ui::BaseEffectWidget)
 {
     ui->setupUi(this);
-    setWindowTitle("Blur");
 
     QLabel* radiusValueLabel = ui->radiusValueLabel;
 
@@ -21,16 +23,16 @@ BlurEffectWidget::BlurEffectWidget(QWidget *parent)
     result = connect(ui->buttonBox,
                      &QDialogButtonBox::clicked,
                      this,
-                     &BlurEffectWidget::on_buttonClicked);
+                     &BaseEffectWidget::on_buttonClicked);
     Q_ASSERT(result);
 }
 
-BlurEffectWidget::~BlurEffectWidget()
+BaseEffectWidget::~BaseEffectWidget()
 {
     delete ui;
 }
 
-void BlurEffectWidget::on_buttonClicked(QAbstractButton *button)
+void BaseEffectWidget::on_buttonClicked(QAbstractButton *button)
 {
     auto standardButton = ui->buttonBox->standardButton(button);
 
@@ -39,14 +41,15 @@ void BlurEffectWidget::on_buttonClicked(QAbstractButton *button)
         close();
         break;
     case QDialogButtonBox::Ok:
-        Q_EMIT applyRadius( ui->radiusSlider->value() );
+        Q_EMIT apply(ui->radiusSlider->value());
         close();
         break;
     case QDialogButtonBox::Apply:
-        Q_EMIT applyRadius( ui->radiusSlider->value() );
+        Q_EMIT apply(ui->radiusSlider->value());
         break;
     case QDialogButtonBox::Discard:
         break;
     default:;
     }
 }
+

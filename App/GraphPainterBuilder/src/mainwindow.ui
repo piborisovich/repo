@@ -64,6 +64,7 @@
     <addaction name="actionDropShadowEffect"/>
     <addaction name="actionColorizeEffect"/>
     <addaction name="actionOpacityEffect"/>
+    <addaction name="actionPixelationEffect"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -150,6 +151,11 @@
   <action name="actionOpacityEffect">
    <property name="text">
     <string>OpacityEffect</string>
+   </property>
+  </action>
+  <action name="actionPixelationEffect">
+   <property name="text">
+    <string>PixelationEffect</string>
    </property>
   </action>
  </widget>

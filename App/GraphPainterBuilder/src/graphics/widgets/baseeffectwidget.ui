@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BlurEffectWidget</class>
- <widget class="QWidget" name="BlurEffectWidget">
+ <class>BaseEffectWidget</class>
+ <widget class="QWidget" name="BaseEffectWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
