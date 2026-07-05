@@ -17,8 +17,7 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
     setScene(m_scene);
     setMouseTracking(true);
     setUpdatesEnabled(true);
-    setRenderHint( QPainter::Antialiasing );
-
+    setRenderHints(QPainter::Antialiasing);
     setAlignment(Qt::AlignCenter);
 
     auto result = connect(m_scene,

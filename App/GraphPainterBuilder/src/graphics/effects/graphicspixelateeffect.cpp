@@ -5,7 +5,7 @@
 
 GraphicsPixelateEffect::GraphicsPixelateEffect(QObject *parent)
     : QGraphicsEffect(parent)
-    , m_pixelSize(10)
+    , m_pixelSize(1)
 {
 
 }
@@ -25,10 +25,6 @@ void GraphicsPixelateEffect::setPixelSize(int size)
 
 void GraphicsPixelateEffect::draw(QPainter *painter)
 {
-    if (m_pixelSize <= 1) {
-        return;
-    }
-
     QPoint offset;
     QPixmap source = sourcePixmap(Qt::LogicalCoordinates, &offset);
     if (source.isNull()) return;
@@ -36,8 +32,10 @@ void GraphicsPixelateEffect::draw(QPainter *painter)
     // Определяем область для пикселизации
     QRect rect = source.rect();
 
+    auto px = m_pixelSize >= 1 ? m_pixelSize : 1;
+
     // Уменьшаем изображение до размера блоков
-    QSize smallSize = QSize(rect.width() / m_pixelSize, rect.height() / m_pixelSize);
+    QSize smallSize = QSize(rect.width() / px, rect.height() / px);
     if (smallSize.isEmpty()) return;
 
     QImage smallImage = source.toImage().scaled(smallSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);

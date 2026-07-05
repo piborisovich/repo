@@ -86,7 +86,8 @@ void MainWindow::on_clearCanvasTriggered()
 
 void MainWindow::on_blurEffectTriggered()
 {
-    EffectWidget<QGraphicsBlurEffect> *blurEffectWidget = new EffectWidget<QGraphicsBlurEffect>(this);
+    EffectWidget<QGraphicsBlurEffect> *blurEffectWidget = new EffectWidget<QGraphicsBlurEffect>(QPixmap(":/image_sample.jpg"),
+                                                                                                this);
     blurEffectWidget->setWindowTitle("Blur");
     auto scene = m_view->scene();
 
@@ -114,24 +115,10 @@ void MainWindow::on_blurEffectTriggered()
     blurEffectWidget->show();
 }
 
-void MainWindow::on_dropShadowTriggered()
-{
-
-}
-
-void MainWindow::on_colorizeEffectTriggered()
-{
-
-}
-
-void MainWindow::on_opacityEffectTriggered()
-{
-
-}
-
 void MainWindow::on_pixelationEffectTriggered()
 {
-    EffectWidget<GraphicsPixelateEffect> *pixelateEffectWidget = new EffectWidget<GraphicsPixelateEffect>(this);
+    EffectWidget<GraphicsPixelateEffect> *pixelateEffectWidget = new EffectWidget<GraphicsPixelateEffect>(QPixmap(":/image_sample.jpg"),
+                                                                                                          this);
     pixelateEffectWidget->setWindowTitle("Pixelate");
     auto scene = m_view->scene();
 
@@ -329,24 +316,6 @@ void MainWindow::init()
                      &QAction::triggered,
                      this,
                      &MainWindow::on_blurEffectTriggered);
-    Q_ASSERT(result);
-
-    result = connect(ui->actionDropShadowEffect,
-                     &QAction::triggered,
-                     this,
-                     &MainWindow::on_dropShadowTriggered);
-    Q_ASSERT(result);
-
-    result = connect(ui->actionColorizeEffect,
-                     &QAction::triggered,
-                     this,
-                     &MainWindow::on_colorizeEffectTriggered);
-    Q_ASSERT(result);
-
-    result = connect(ui->actionOpacityEffect,
-                     &QAction::triggered,
-                     this,
-                     &MainWindow::on_opacityEffectTriggered);
     Q_ASSERT(result);
 
     result = connect(ui->actionPixelationEffect,

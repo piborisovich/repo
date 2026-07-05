@@ -61,9 +61,6 @@
      <string>Filters</string>
     </property>
     <addaction name="actionBlurEffect"/>
-    <addaction name="actionDropShadowEffect"/>
-    <addaction name="actionColorizeEffect"/>
-    <addaction name="actionOpacityEffect"/>
     <addaction name="actionPixelationEffect"/>
    </widget>
    <addaction name="menuFile"/>

@@ -7,11 +7,12 @@ template<class effectT>
 class EffectWidget : public BaseEffectWidget
 {
 public:
-    explicit EffectWidget(QWidget *parent = nullptr);
+    explicit EffectWidget(const QPixmap &pixmap,
+                          QWidget *parent = nullptr);
     ~EffectWidget();
 
 protected:
-    void on_apply() override;
+    QGraphicsEffect* createEffect(int size) override;
 };
 
 #endif // EFFECTWIDGET_HPP

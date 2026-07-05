@@ -15,17 +15,18 @@ class BaseEffectWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit BaseEffectWidget(QWidget *parent = nullptr);
+    explicit BaseEffectWidget(const QPixmap &pixmap, QWidget *parent = nullptr);
     ~BaseEffectWidget();
 
 Q_SIGNALS:
     void apply(int size);
 
-protected:
-    virtual void on_apply() = 0;
+public:
+    virtual QGraphicsEffect *createEffect(int size) = 0;
 
 private Q_SLOTS:
     void on_buttonClicked(QAbstractButton* button);
+    void on_sliderReleased();
 
 private:
     Ui::BaseEffectWidget *ui;
