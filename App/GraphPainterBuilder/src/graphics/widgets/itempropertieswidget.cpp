@@ -17,7 +17,7 @@ ItemPropertiesWidget::ItemPropertiesWidget(QWidget *parent, Qt::WindowFlags f)
 
     QVBoxLayout* penLayout = new QVBoxLayout(penGroup);
 
-    m_penSizeSlider->setRange(1, 100);
+    m_penSizeSlider->setRange(1, 1000);
     m_penSizeSlider->setValue(0);
 
     penLayout->addWidget(m_penColorButton);
@@ -76,10 +76,10 @@ void ItemPropertiesWidget::on_penColorClicked()
 void ItemPropertiesWidget::on_showSliderTooltip(int value)
 {
     // Show the tooltip text instantly at the current cursor position
-    QToolTip::showText(QCursor::pos(), QString::number(value), m_penSizeSlider);
+    QToolTip::showText(QCursor::pos(), QString::number(value / 10.0), m_penSizeSlider);
 
     auto currentPen = pen();
-    currentPen.setWidth(value);
+    currentPen.setWidthF(value / 10.0);
 
     Q_EMIT penChanged(currentPen);
 }
