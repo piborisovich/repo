@@ -10,7 +10,7 @@
 class VertexMarkerItem : public QGraphicsEllipseItem
 {
 public:
-    explicit VertexMarkerItem(QGraphicsItem *parent = nullptr);
+    explicit VertexMarkerItem(int vertexWith = 10, QGraphicsItem *parent = nullptr);
 
     void deactivate();
 

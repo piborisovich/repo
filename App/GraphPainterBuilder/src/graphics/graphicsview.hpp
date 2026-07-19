@@ -32,6 +32,9 @@ public Q_SLOTS:
     void clearLayer(int layerZ);
 
 public:
+
+    GraphicsScene *graphicsScene();
+
     void addSceneListener(ISceneListener* listener);
     void removeSceneListener(ISceneListener* listener);
 

@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -56,9 +56,17 @@
     <addaction name="separator"/>
     <addaction name="actionClear_canvas"/>
    </widget>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Filters</string>
+    </property>
+    <addaction name="actionBlurEffect"/>
+    <addaction name="actionPixelationEffect"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuFilters"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExit">
@@ -120,6 +128,31 @@
   <action name="actionClear_canvas">
    <property name="text">
     <string>Clear canvas</string>
+   </property>
+  </action>
+  <action name="actionBlurEffect">
+   <property name="text">
+    <string>BlurEffect</string>
+   </property>
+  </action>
+  <action name="actionDropShadowEffect">
+   <property name="text">
+    <string>DropShadowEffect</string>
+   </property>
+  </action>
+  <action name="actionColorizeEffect">
+   <property name="text">
+    <string>ColorizeEffect</string>
+   </property>
+  </action>
+  <action name="actionOpacityEffect">
+   <property name="text">
+    <string>OpacityEffect</string>
+   </property>
+  </action>
+  <action name="actionPixelationEffect">
+   <property name="text">
+    <string>PixelationEffect</string>
    </property>
   </action>
  </widget>

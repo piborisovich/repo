@@ -17,9 +17,9 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
     setScene(m_scene);
     setMouseTracking(true);
     setUpdatesEnabled(true);
-    setRenderHint( QPainter::Antialiasing );
-
+    setRenderHints(QPainter::Antialiasing);
     setAlignment(Qt::AlignCenter);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 
     auto result = connect(m_scene,
                           &GraphicsScene::canUndoChanged,
@@ -117,6 +117,11 @@ void GraphicsView::clearLayer(int layerZ)
 {
     m_scene->clearLayer(layerZ);
 
+}
+
+GraphicsScene *GraphicsView::graphicsScene()
+{
+    return m_scene;
 }
 
 void GraphicsView::clear()

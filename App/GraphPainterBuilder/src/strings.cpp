@@ -47,4 +47,6 @@ const char *SAVE_IMAGE_DIALOIG_TITLE = "Image export";
 
 const char *SAVE_SUCCESS_MSG_BOX_TITLE = "Success";
 const char *SAVE_SUCCESS_MSG_BOX_MESSAGE = "The image was saved successfully!";
+
+const char *DELETE_ITEM_ACTION_TEXT = "Delete";
 } //Strings

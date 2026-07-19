@@ -15,8 +15,8 @@ ToolSettingsWidget::ToolSettingsWidget(std::shared_ptr<ToolSettings> settings,
 {
     QSlider *sizeSlider = new QSlider(Qt::Horizontal);
 
-    sizeSlider->setRange(1, 100);
-    sizeSlider->setValue( settings->brushSize() );
+    sizeSlider->setRange(1, 1000);
+    sizeSlider->setValue( settings->brushSize() * 10.0 );
 
     m_layout->addRow(sizeSlider);
     m_layout->addRow(Strings::BRUSH_SIZE_TEXT, m_sizeLabel);
@@ -27,7 +27,7 @@ ToolSettingsWidget::ToolSettingsWidget(std::shared_ptr<ToolSettings> settings,
                           &ToolSettingsWidget::on_brushSizeChanged);
     Q_ASSERT(result);
 
-    on_brushSizeChanged(sizeSlider->value());
+    on_brushSizeChanged( sizeSlider->value() );
 }
 
 void ToolSettingsWidget::addWidget(QWidget *widget)
@@ -42,8 +42,9 @@ void ToolSettingsWidget::addWidget(const QString &name, QWidget *widget)
 
 void ToolSettingsWidget::on_brushSizeChanged(int size)
 {
-    m_sizeLabel->setText(QString::number(size));
+    qreal value = size / 10.0;
+    m_sizeLabel->setText( QString::number(value, 'f', 1) );
     if ( m_settings ) {
-        m_settings->setBrushSize(size);
+        m_settings->setBrushSize(value);
     }
 }

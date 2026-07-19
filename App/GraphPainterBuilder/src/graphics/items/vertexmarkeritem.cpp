@@ -2,11 +2,9 @@
 
 #include <QPen>
 
-static constexpr int VERTEX_WIDTH_PX = 10;
-
-VertexMarkerItem::VertexMarkerItem(QGraphicsItem *parent)
-    : QGraphicsEllipseItem(-VERTEX_WIDTH_PX / 2, -VERTEX_WIDTH_PX / 2,
-                           VERTEX_WIDTH_PX, VERTEX_WIDTH_PX, parent)
+VertexMarkerItem::VertexMarkerItem(int vertexWith, QGraphicsItem *parent)
+    : QGraphicsEllipseItem(-vertexWith / 2, -vertexWith / 2,
+                           vertexWith, vertexWith, parent)
     , m_vertexIndex(-1)
 {
     setPen( QPen( Qt::red, 2 ) );

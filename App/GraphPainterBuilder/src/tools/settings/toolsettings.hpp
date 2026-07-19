@@ -12,8 +12,8 @@ public:
 
     ToolSettings();
 
-    int brushSize() const;
-    void setBrushSize(int newBrushSize);
+    qreal brushSize() const;
+    void setBrushSize(qreal newBrushSize);
 
     QGraphicsView::DragMode dragMode() const;
     void setDragMode(const QGraphicsView::DragMode &newDragMode);
@@ -21,7 +21,7 @@ public:
     virtual ~ToolSettings() {}
 
 private:
-    int m_brushSize;
+    qreal m_brushSize;
     QGraphicsView::DragMode m_dragMode;
 };
 

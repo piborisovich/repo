@@ -9,5 +9,6 @@
         <file alias="line.png">pictures/line.png</file>
         <file alias="graph.png">pictures/graph.png</file>
         <file alias="pipette.png">pictures/pipette.png</file>
+        <file alias="image_sample.jpg">pictures/image_sample.jpg</file>
     </qresource>
 </RCC>

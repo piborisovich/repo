@@ -1,28 +1,27 @@
 #ifndef PATHITEM_HPP
 #define PATHITEM_HPP
 
-#include "vertexmarkeritem.hpp"
+#include "graphicsitem.hpp"
+
 #include <QGraphicsPathItem>
 
-class PathItem : public QGraphicsPathItem
+class PathItem : public GraphicsItem<QGraphicsPathItem>
 {
 public:
     PathItem( const QPainterPath &painterPath, QGraphicsItem *parent = nullptr );
 
 protected:
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
-
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual QPointF translatedVertex(const QPointF &cursorDxDy, int vertexIndex) const override;
+    void setPoint(const QPointF &point, int vertexIndex) override;
+
+    int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) const override;
+
+    qreal strokeWidth() const override;
 
 private:
-    int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point);
 
-private:
-    VertexMarkerItem* m_vertex;
 };
 
 #endif // PATHITEM_HPP

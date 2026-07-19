@@ -1,17 +1,17 @@
 #include "toolsettings.hpp"
 
 ToolSettings::ToolSettings()
-    : m_brushSize(5)
+    : m_brushSize(5.0)
     , m_dragMode(QGraphicsView::NoDrag)
 {
 }
 
-int ToolSettings::brushSize() const
+qreal ToolSettings::brushSize() const
 {
     return m_brushSize;
 }
 
-void ToolSettings::setBrushSize(int newBrushSize)
+void ToolSettings::setBrushSize(qreal newBrushSize)
 {
     m_brushSize = newBrushSize;
 }

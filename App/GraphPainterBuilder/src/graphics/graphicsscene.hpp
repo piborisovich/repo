@@ -47,6 +47,12 @@ public:
      */
     void addImage(const QString &path, QSize &imageSize);
 
+    /*!
+     * \brief addItems
+     * \param items
+     */
+    void removeItems(const QList<QGraphicsItem*> &items);
+
     QColor currentColor() const;
     void setCurrentColor(const QColor &newCurrentColor);
 

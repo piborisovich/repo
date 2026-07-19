@@ -1,8 +1,12 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
+#include "effectwidget.hpp"
+#include "graphicspixelateeffect.hpp"
+
 #include "strings.hpp"
 
+#include <QGraphicsBlurEffect>
 #include <QFileDialog>
 #include <QComboBox>
 #include <QColorDialog>
@@ -80,6 +84,66 @@ void MainWindow::on_clearCanvasTriggered()
     }
 }
 
+void MainWindow::on_blurEffectTriggered()
+{
+    EffectWidget<QGraphicsBlurEffect> *blurEffectWidget = new EffectWidget<QGraphicsBlurEffect>(QPixmap(":/image_sample.jpg"),
+                                                                                                this);
+    blurEffectWidget->setWindowTitle("Blur");
+    auto scene = m_view->scene();
+
+    auto result = connect(blurEffectWidget,
+                          &EffectWidget<QGraphicsBlurEffect>::apply,
+                          this,
+                          [scene](int radius){
+                              const auto selectedItems = scene->selectedItems();
+
+                              for ( auto item : selectedItems ) {
+                                  // 1. Initialize the blur effect
+                                  QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
+                                  // 2. Set the blur radius (higher number = more blur)
+                                  blurEffect->setBlurRadius(radius);
+                                  // 3. (Optional) Set performance hints for animations or quality
+                                  blurEffect->setBlurHints(QGraphicsBlurEffect::QualityHint);
+                                  // 4. Apply the effect directly to the widget
+                                  item->setGraphicsEffect(blurEffect);
+                              }
+                          });
+    Q_ASSERT(result);
+
+    blurEffectWidget->setAttribute(Qt::WA_DeleteOnClose);
+
+    blurEffectWidget->show();
+}
+
+void MainWindow::on_pixelationEffectTriggered()
+{
+    EffectWidget<GraphicsPixelateEffect> *pixelateEffectWidget = new EffectWidget<GraphicsPixelateEffect>(QPixmap(":/image_sample.jpg"),
+                                                                                                          this);
+    pixelateEffectWidget->setWindowTitle("Pixelate");
+    auto scene = m_view->scene();
+
+    auto result = connect(pixelateEffectWidget,
+                          &EffectWidget<QGraphicsBlurEffect>::apply,
+                          this,
+                          [scene](int radius){
+                              const auto selectedItems = scene->selectedItems();
+
+                              for ( auto item : selectedItems ) {
+
+                                  GraphicsPixelateEffect *pixelateEffect = new GraphicsPixelateEffect();
+
+                                  pixelateEffect->setPixelSize(radius);
+
+                                  item->setGraphicsEffect(pixelateEffect);
+                              }
+                          });
+    Q_ASSERT(result);
+
+    pixelateEffectWidget->setAttribute(Qt::WA_DeleteOnClose);
+
+    pixelateEffectWidget->show();
+}
+
 void MainWindow::on_viewScaleChanged(qreal scale)
 {
     m_scaleLabel->setText( QString(SCALE_TAMPLATE).arg( int(scale * 100) ) );
@@ -107,6 +171,25 @@ void MainWindow::on_itemDeselected()
         removeDockWidget(m_propertiesWidget);
         m_propertiesWidget->deleteLater();
         m_propertiesWidget = nullptr;
+    }
+}
+
+void MainWindow::on_showContextMenu(const QPoint &pos)
+{
+    auto scenePos = m_view->mapToScene(pos);
+    if ( auto item = m_view->scene()->itemAt( scenePos, QTransform() ) ) {
+
+        if ( item->isSelected() ) {
+            QMenu contextMenu(this);
+            QAction *deleteAction = contextMenu.addAction(Strings::DELETE_ITEM_ACTION_TEXT);
+
+            QAction* current = contextMenu.exec( m_view->mapToGlobal(pos) );
+
+            if ( current == deleteAction ) {
+                auto scene = m_view->graphicsScene();
+                scene->removeItems(QList<QGraphicsItem*>() << item);
+            }
+        }
     }
 }
 
@@ -248,6 +331,18 @@ void MainWindow::init()
                      &GraphicsView::setCurrentrColor);
     Q_ASSERT(result);
 
+    result = connect(ui->actionBlurEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_blurEffectTriggered);
+    Q_ASSERT(result);
+
+    result = connect(ui->actionPixelationEffect,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::on_pixelationEffectTriggered);
+    Q_ASSERT(result);
+
     for ( auto &tool : m_core->tools() ) {
         result = connect(tool.get(),
                          &ITool::colorChangeRequested,
@@ -261,6 +356,12 @@ void MainWindow::init()
                          &GraphicsView::setCurrentrColor);
         Q_ASSERT(result);
     }
+
+    result = connect(m_view,
+                     &GraphicsView::customContextMenuRequested,
+                     this,
+                     &MainWindow::on_showContextMenu);
+    Q_ASSERT(result);
 
     ui->actionLayer_panel->setChecked(true);
 

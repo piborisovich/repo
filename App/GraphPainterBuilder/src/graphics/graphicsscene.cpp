@@ -1,11 +1,14 @@
 #include "graphicsscene.hpp"
 #include "additemcommand.hpp"
+#include "macrodeletecommand.hpp"
+#include "graphicsitem.hpp"
 #include "itool.hpp"
 
 #include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QUndoStack>
 
+using PixmapItem = GraphicsItem<QGraphicsPixmapItem>;
 
 const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(Qt::white);
 const QRectF GraphicsScene::DEFAULT_SCENE_RECT = QRectF(0, 0, 800, 600);
@@ -78,6 +81,19 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         if ( m_currentTool ) {
             m_currentTool->handleMousePress( event->button(), pos );
+        }
+    }
+
+    //Отработка нажатия на правую кнопку мыши
+    if ( event->button() == Qt::RightButton ) {
+
+        clearSelection();
+
+        //Выделить самый верхний элемент под курсором
+        auto item = itemAt(pos, QTransform());
+
+        if ( item ) {
+            item->setSelected(true);
         }
     }
 
@@ -191,16 +207,36 @@ void GraphicsScene::addImage(const QString & path, QSize &imageSize)
     QPixmap pixmap(path);
 
     if ( !pixmap.isNull() ) {
-        newItem = new QGraphicsPixmapItem(pixmap);
+        newItem = new PixmapItem(pixmap);
     }
 
     if ( newItem ) {
+        if ( m_currentTool ) {
+            m_currentTool->unselect();
+        }
+
+        QRectF sr = sceneRect();
+
         newItem->setZValue(m_currentLayerZ);
         imageSize = pixmap.size();
         //newItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
         m_undoStack->push(new Commands::AddItemCommand(this, newItem));
+
+        setSceneRect( QRectF( QPointF(0, 0),
+                            QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
+                                    qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
+
+        if ( m_currentTool ) {
+            m_currentTool->select();
+        }
     }
 
+}
+
+[[clang::suppress]]
+void GraphicsScene::removeItems(const QList<QGraphicsItem *> &items)
+{
+    addSceneCommand( new Commands::MacroDeleteCommand(this, items) );
 }
 
 int GraphicsScene::currentLayerZ() const

@@ -15,7 +15,7 @@ LineTool::LineTool(QObject *parent) :
 
 void LineTool::handleMousePress(Qt::MouseButton button, const QPointF &scenePos)
 {
-    GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+    GraphicsScene *gScene = scene();
 
     if ( gScene == nullptr ) return;
 

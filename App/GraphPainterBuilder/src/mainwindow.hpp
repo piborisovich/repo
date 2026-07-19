@@ -36,12 +36,17 @@ public:
     ~MainWindow();
 
 private Q_SLOTS:
-    void on_imageImportTriggered();   //!< Импорт
-    void on_exportToImageTriggered(); //!< Экспорт
-    void on_clearCanvasTriggered();   //!< Очистить сцену
+    void on_imageImportTriggered();      //!< Импорт
+    void on_exportToImageTriggered();    //!< Экспорт
+    void on_clearCanvasTriggered();      //!< Очистить сцену
+    void on_blurEffectTriggered();       //!< Эффект размытия, открыть настройки
+    void on_pixelationEffectTriggered(); //!< Эффект пикселизации
+
     void on_viewScaleChanged(qreal scale);     //!< Масштаб представления изменен
     void on_itemSelected(QGraphicsItem* item); //!< Графический элемент выделен
     void on_itemDeselected();                  //!< Снято выделение с графисекого элемента
+
+    void on_showContextMenu(const QPoint &pos);
 
 private:
     void init();
