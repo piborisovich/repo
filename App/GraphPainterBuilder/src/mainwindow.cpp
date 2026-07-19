@@ -174,6 +174,26 @@ void MainWindow::on_itemDeselected()
     }
 }
 
+void MainWindow::on_showContextMenu(const QPoint &pos)
+{
+    auto scenePos = m_view->mapToScene(pos);
+    if ( auto item = m_view->scene()->itemAt( scenePos, QTransform() ) ) {
+
+        if ( item->isSelected() ) {
+
+            QMenu contextMenu(this);
+            QAction *deleteAction = contextMenu.addAction(Strings::DELETE_ITEM_ACTION_TEXT);
+
+            QAction* current = contextMenu.exec( m_view->mapToGlobal(pos) );
+
+            if ( current == deleteAction ) {
+                auto scene = m_view->graphicsScene();
+                scene->removeItems(QList<QGraphicsItem*>() << item);
+            }
+        }
+    }
+}
+
 void MainWindow::init()
 {
     setWindowTitle( Core::applicationName() );
@@ -337,6 +357,12 @@ void MainWindow::init()
                          &GraphicsView::setCurrentrColor);
         Q_ASSERT(result);
     }
+
+    result = connect(m_view,
+                     &GraphicsView::customContextMenuRequested,
+                     this,
+                     &MainWindow::on_showContextMenu);
+    Q_ASSERT(result);
 
     ui->actionLayer_panel->setChecked(true);
 

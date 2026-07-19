@@ -1,5 +1,6 @@
 #include "graphicsscene.hpp"
 #include "additemcommand.hpp"
+#include "macrodeletecommand.hpp"
 #include "itool.hpp"
 
 #include <QMouseEvent>
@@ -78,6 +79,19 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         if ( m_currentTool ) {
             m_currentTool->handleMousePress( event->button(), pos );
+        }
+    }
+
+    //Отработка нажатия на правую кнопку мыши
+    if ( event->button() == Qt::RightButton ) {
+
+        clearSelection();
+
+        //Выделить самый верхний элемент под курсором
+        auto item = itemAt(pos, QTransform());
+
+        if ( item ) {
+            item->setSelected(true);
         }
     }
 
@@ -207,6 +221,12 @@ void GraphicsScene::addImage(const QString & path, QSize &imageSize)
                                    qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
     }
 
+}
+
+[[clang::suppress]]
+void GraphicsScene::removeItems(const QList<QGraphicsItem *> &items)
+{
+    addSceneCommand( new Commands::MacroDeleteCommand(this, items) );
 }
 
 int GraphicsScene::currentLayerZ() const

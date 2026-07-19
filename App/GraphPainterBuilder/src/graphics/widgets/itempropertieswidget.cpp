@@ -46,16 +46,17 @@ ItemPropertiesWidget::ItemPropertiesWidget(QWidget *parent, Qt::WindowFlags f)
 
 void ItemPropertiesWidget::setPen(const QPen &pen)
 {
+    m_pen = pen;
     m_penColorButton->setStyleSheet(QString("background-color: %1;"
                                             "min-height: 30px;"
                                             "border: 1px solid #555;").arg( pen.color().name()) );
 
-    m_penSizeSlider->setValue(pen.width());
+    m_penSizeSlider->setValue( pen.width() * 10 );
 }
 
 QPen ItemPropertiesWidget::pen() const
 {
-    return QPen( m_penColorButton->palette().button().color(), m_penSizeSlider->value() );
+    return m_pen;
 }
 
 void ItemPropertiesWidget::on_penColorClicked()
@@ -65,21 +66,18 @@ void ItemPropertiesWidget::on_penColorClicked()
                                           Strings::SELECT_COLOR_TEXT);
     if (color.isValid()) {
 
-        auto currentPen = pen();
-        currentPen.setColor(color);
-        setPen(currentPen);
-
-        Q_EMIT penChanged(currentPen);
+        m_pen.setColor(color);
+        Q_EMIT penChanged(m_pen);
     }
 }
 
 void ItemPropertiesWidget::on_showSliderTooltip(int value)
 {
+    value /= 10.0;
     // Show the tooltip text instantly at the current cursor position
-    QToolTip::showText(QCursor::pos(), QString::number(value / 10.0), m_penSizeSlider);
+    QToolTip::showText( QCursor::pos(), QString::number(value), m_penSizeSlider );
 
-    auto currentPen = pen();
-    currentPen.setWidthF(value / 10.0);
+    m_pen.setWidthF(value);
 
-    Q_EMIT penChanged(currentPen);
+    Q_EMIT penChanged(m_pen);
 }

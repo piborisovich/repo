@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += \
            $$PWD/constraintlineitem.hpp \
+           $$PWD/graphicsitem.hpp \
            $$PWD/lineitem.hpp \
            $$PWD/pathitem.hpp \
            $$PWD/vertexmarkeritem.hpp

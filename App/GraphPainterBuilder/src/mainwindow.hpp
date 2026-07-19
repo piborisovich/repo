@@ -46,6 +46,8 @@ private Q_SLOTS:
     void on_itemSelected(QGraphicsItem* item); //!< Графический элемент выделен
     void on_itemDeselected();                  //!< Снято выделение с графисекого элемента
 
+    void on_showContextMenu(const QPoint &pos);
+
 private:
     void init();
 

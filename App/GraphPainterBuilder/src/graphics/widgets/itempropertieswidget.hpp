@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QSlider>
+#include <QPen>
 
 class ItemPropertiesWidget : public QWidget
 {
@@ -26,6 +27,7 @@ private Q_SLOTS:
 private:
     QPushButton *m_penColorButton;
     QSlider *m_penSizeSlider;
+    QPen m_pen;
 
 };
 

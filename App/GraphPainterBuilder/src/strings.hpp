@@ -43,6 +43,8 @@ extern const char *SAVE_IMAGE_DIALOIG_TITLE;
 
 extern const char *SAVE_SUCCESS_MSG_BOX_TITLE;
 extern const char *SAVE_SUCCESS_MSG_BOX_MESSAGE;
+
+extern const char *DELETE_ITEM_ACTION_TEXT;
 } //Strings
 
 #endif // STRINGS_HPP

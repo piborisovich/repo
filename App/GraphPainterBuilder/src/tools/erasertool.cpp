@@ -27,7 +27,7 @@ void EraserTool::handleMouseRelease(Qt::MouseButton button, const QPointF &scene
 
     if ( button == Qt::LeftButton ) {
         if ( !m_erasedItems.isEmpty() ) {
-            GraphicsScene *gScene = qobject_cast<GraphicsScene*>(scene());
+            GraphicsScene *gScene = scene();
 
             if ( gScene == nullptr ) return;
             // Записываем все удаленные за один проход элементы в одну Undo-команду
