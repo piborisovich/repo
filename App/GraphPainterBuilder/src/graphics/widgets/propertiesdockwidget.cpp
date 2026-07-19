@@ -27,7 +27,11 @@ PropertiesDockWidget::PropertiesDockWidget(const QString &title,
     QVBoxLayout* widgetLayout = new QVBoxLayout(contentWidget);
 
     widgetLayout->setContentsMargins(5, 5, 5, 5);
-    widgetLayout->addWidget(m_propertiesWidget);
+
+    if ( m_propertiesWidget ) {
+        widgetLayout->addWidget(m_propertiesWidget);
+    }
+
     widgetLayout->addStretch();
 
     setWidget( contentWidget );

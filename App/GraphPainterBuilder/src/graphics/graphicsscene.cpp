@@ -1,12 +1,14 @@
 #include "graphicsscene.hpp"
 #include "additemcommand.hpp"
 #include "macrodeletecommand.hpp"
+#include "graphicsitem.hpp"
 #include "itool.hpp"
 
 #include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QUndoStack>
 
+using PixmapItem = GraphicsItem<QGraphicsPixmapItem>;
 
 const QBrush GraphicsScene::BACKGROUND_BRUSH = QBrush(Qt::white);
 const QRectF GraphicsScene::DEFAULT_SCENE_RECT = QRectF(0, 0, 800, 600);
@@ -205,10 +207,14 @@ void GraphicsScene::addImage(const QString & path, QSize &imageSize)
     QPixmap pixmap(path);
 
     if ( !pixmap.isNull() ) {
-        newItem = new QGraphicsPixmapItem(pixmap);
+        newItem = new PixmapItem(pixmap);
     }
 
     if ( newItem ) {
+        if ( m_currentTool ) {
+            m_currentTool->unselect();
+        }
+
         QRectF sr = sceneRect();
 
         newItem->setZValue(m_currentLayerZ);
@@ -218,7 +224,11 @@ void GraphicsScene::addImage(const QString & path, QSize &imageSize)
 
         setSceneRect( QRectF( QPointF(0, 0),
                             QSizeF( qMax( sr.width(), qreal(imageSize.width()) ),
-                                   qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
+                                    qMax( sr.height(), qreal(imageSize.height()) ) ) ) );
+
+        if ( m_currentTool ) {
+            m_currentTool->select();
+        }
     }
 
 }

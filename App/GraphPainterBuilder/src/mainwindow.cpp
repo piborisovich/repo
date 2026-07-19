@@ -180,7 +180,6 @@ void MainWindow::on_showContextMenu(const QPoint &pos)
     if ( auto item = m_view->scene()->itemAt( scenePos, QTransform() ) ) {
 
         if ( item->isSelected() ) {
-
             QMenu contextMenu(this);
             QAction *deleteAction = contextMenu.addAction(Strings::DELETE_ITEM_ACTION_TEXT);
 

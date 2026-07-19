@@ -117,12 +117,32 @@ protected:
             if ( m_vertex->vertexIndex() == -1 ) {
                 BaseItem::mouseMoveEvent(event);
             } else {
+                // 1. Вычисляем смещение и предварительную новую точку
                 QPointF dxdy = event->pos() - event->lastPos();
                 auto newPoint = translatedVertex( dxdy, m_vertex->vertexIndex() );
-                if ( this->scene()->sceneRect().contains( this->mapToScene( newPoint ) ) ) {
-                    setPoint(newPoint, m_vertex->vertexIndex());
-                    m_vertex->setVertexPos(newPoint);
+
+                // 2. Рассчитываем допустимые границы сцены
+                auto outlineWidth = strokeWidth() / 2.0;
+                QRectF allowedRect = this->scene()->sceneRect().adjusted( outlineWidth,
+                                                                          outlineWidth,
+                                                                         -outlineWidth,
+                                                                         -outlineWidth );
+
+                // 3. Переводим точку в координаты сцены для проверки границ
+                QPointF scenePoint = this->mapToScene( newPoint );
+
+                // 4. Если точка вышла за границы, жестко привязываем (clamp) её к краям
+                if ( !allowedRect.contains( scenePoint ) ) {
+                    scenePoint.setX( qBound( allowedRect.left(), scenePoint.x(), allowedRect.right() ) );
+                    scenePoint.setY( qBound( allowedRect.top(), scenePoint.y(), allowedRect.bottom() ) );
+                    // Возвращаем скорректированную позицию обратно в локальные координаты
+                    newPoint = this->mapFromScene( scenePoint );
                 }
+
+                // 5. Обновляем координаты и принудительно перерисовываем элемент
+                setPoint(newPoint, m_vertex->vertexIndex());
+                m_vertex->setVertexPos(newPoint);
+                this->update();
             }
 
         } else {
@@ -146,9 +166,34 @@ protected:
         return m_vertex;
     }
 
-    virtual int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) const = 0;
-    virtual QPointF translatedVertex(const QPointF &cursorDxDy, int vertexIndex) const = 0;
-    virtual void setPoint(const QPointF &point, int vertexIndex) = 0;
+    virtual int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) const
+    {
+        Q_UNUSED(pos);
+        Q_UNUSED(point);
+        return -1;
+    }
+
+    virtual QPointF translatedVertex(const QPointF &cursorDxDy, int vertexIndex) const
+    {
+        Q_UNUSED(cursorDxDy);
+        Q_UNUSED(vertexIndex);
+        return QPointF();
+    }
+
+    virtual void setPoint(const QPointF &point, int vertexIndex)
+    {
+        Q_UNUSED(point);
+        Q_UNUSED(vertexIndex);
+    }
+
+    /*!
+     * \brief Толщина пера
+     * \return
+     */
+    virtual qreal strokeWidth() const
+    {
+        return 0.0;
+    }
 
 private:
     GraphicsScene* m_scene;

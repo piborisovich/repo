@@ -73,11 +73,9 @@ void ItemPropertiesWidget::on_penColorClicked()
 
 void ItemPropertiesWidget::on_showSliderTooltip(int value)
 {
-    value /= 10.0;
+    m_pen.setWidthF(value / 10.0);
     // Show the tooltip text instantly at the current cursor position
-    QToolTip::showText( QCursor::pos(), QString::number(value), m_penSizeSlider );
-
-    m_pen.setWidthF(value);
+    QToolTip::showText( QCursor::pos(), QString::number( m_pen.widthF() ), m_penSizeSlider );
 
     Q_EMIT penChanged(m_pen);
 }

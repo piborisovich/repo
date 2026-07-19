@@ -38,9 +38,9 @@ void SelectTool::select()
 {
     if ( scene() ) {
 
-        auto allItems =  scene()->items();
+        const auto allItems =  scene()->items();
 
-        for (QGraphicsItem *item : allItems) {
+        for ( QGraphicsItem *item : allItems ) {
             item->setFlag(QGraphicsItem::ItemIsSelectable, true);
             item->setFlag(QGraphicsItem::ItemIsMovable, true);
         }

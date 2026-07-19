@@ -83,3 +83,8 @@ int LineItem::findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) 
 
     return bestIndex;
 }
+
+qreal LineItem::strokeWidth() const
+{
+    return pen().widthF();
+}

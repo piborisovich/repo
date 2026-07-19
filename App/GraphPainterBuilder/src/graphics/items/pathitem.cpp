@@ -61,3 +61,8 @@ int PathItem::findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) 
 
     return bestIndex;
 }
+
+qreal PathItem::strokeWidth() const
+{
+    return pen().widthF();
+}

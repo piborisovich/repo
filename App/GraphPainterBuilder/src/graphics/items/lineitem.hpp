@@ -20,6 +20,8 @@ protected:
 
     int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) const override;
 
+    qreal strokeWidth() const override;
+
 };
 
 #endif // LINEITEM_HPP

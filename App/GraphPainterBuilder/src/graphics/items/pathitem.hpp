@@ -14,9 +14,11 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     virtual QPointF translatedVertex(const QPointF &cursorDxDy, int vertexIndex) const override;
-    virtual void setPoint(const QPointF &point, int vertexIndex) override;
+    void setPoint(const QPointF &point, int vertexIndex) override;
 
     int findVertexPositionUnderCursor(const QPointF &pos, QPointF &point) const override;
+
+    qreal strokeWidth() const override;
 
 private:
 
