@@ -50,7 +50,7 @@ void EraserTool::processDrawing(QPointF pos)
 
     if ( scn ) {
 
-        auto brushSize = settings()->brushSize();
+        auto brushSize = settings()->penSize();
 
         QList<QGraphicsItem*> itemsAtPos = scene()->items( QRectF( pos.x() - brushSize/2.0,
                                                                   pos.y() - brushSize/2.0,

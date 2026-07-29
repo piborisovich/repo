@@ -86,6 +86,22 @@ void Tool::unselect()
 {
 }
 
+bool Tool::vertexOnScene(const QPointF &scenePos) const
+{
+    if ( m_settings && m_scene ) {
+
+        auto width = m_settings->penSize();
+
+        auto width_div2 = width / 2.0;
+
+        QRectF vertexRect( scenePos - QPointF(width_div2, width_div2), QSizeF(width, width) );
+
+        return m_scene->sceneRect().contains(vertexRect);
+    }
+
+    return false;
+}
+
 void Tool::on_buttonClicked(bool checked)
 {
     if ( m_scene ) {

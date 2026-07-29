@@ -163,7 +163,7 @@ void GraphTool::on_startPlot()
     QList<QPointF> points;
 
     QPen pen(scn->currentColor(),
-             graphSettings->brushSize(),
+             graphSettings->penSize(),
              Qt::SolidLine,
              Qt::RoundCap,
              Qt::RoundJoin);

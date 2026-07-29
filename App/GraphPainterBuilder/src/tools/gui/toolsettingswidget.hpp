@@ -23,7 +23,7 @@ protected:
     std::shared_ptr<ToolSettings> m_settings;
 
 private Q_SLOTS:
-    void on_brushSizeChanged(int size);
+    void on_penSizeChanged(int size);
 
 private:
 

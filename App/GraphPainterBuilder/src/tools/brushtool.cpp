@@ -1,5 +1,6 @@
 #include "brushtool.hpp"
 #include "graphicsscene.hpp"
+#include "graphicsitem.hpp"
 
 #include "macroaddcommand.hpp"
 
@@ -41,11 +42,11 @@ void BrushTool::processDrawing(QPointF pos)
 {
     auto scn = scene();
 
-    if ( scn ) {
+    if ( scn && vertexOnScene(pos) ) {
 
         QBrush brush(scn->currentColor());
 
-        auto brushSize = settings()->brushSize();
+        auto brushSize = settings()->penSize();
 
         QPen pen(scn->currentColor(),
                  brushSize,
@@ -53,13 +54,13 @@ void BrushTool::processDrawing(QPointF pos)
                  Qt::RoundCap,
                  Qt::RoundJoin);
 
-        QGraphicsItem *newItem = new QGraphicsEllipseItem(pos.x() - brushSize/2.0,
-                                                          pos.y() - brushSize/2.0,
-                                                          brushSize,
-                                                          brushSize);
+        auto *newItem = new GraphicsItem<QGraphicsEllipseItem>(pos.x() - brushSize/2.0,
+                                                               pos.y() - brushSize/2.0,
+                                                               brushSize,
+                                                               brushSize);
 
-        static_cast<QGraphicsEllipseItem*>(newItem)->setPen(pen);
-        static_cast<QGraphicsEllipseItem*>(newItem)->setBrush(brush);
+        newItem->setPen(pen);
+        newItem->setBrush(brush);
 
         newItem->setZValue(scn->currentLayerZ());
 

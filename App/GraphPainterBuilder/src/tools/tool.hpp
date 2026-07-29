@@ -30,6 +30,13 @@ public:
     void select() override;
     void unselect() override;
 
+    /*!
+     * \brief Проверка помещается ли вершина полностью в сцену
+     * \param scenePos
+     * \return
+     */
+    bool vertexOnScene(const QPointF &scenePos) const override;
+
 private Q_SLOTS:
     void on_buttonClicked(bool checked);
     void on_buttonToggled(bool checked);

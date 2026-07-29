@@ -10,14 +10,17 @@ HEADERS += \
            $$PWD/core.hpp \
            $$PWD/layerswidget.hpp \
            $$PWD/mainwindow.hpp \
-           $$PWD/strings.hpp
+           $$PWD/strings.hpp \
+           $$PWD/constants.hpp
 SOURCES += \
            $$PWD/core.cpp \
            $$PWD/flowlayout.cpp \
            $$PWD/layerswidget.cpp \
            $$PWD/main.cpp \
            $$PWD/mainwindow.cpp \
-           $$PWD/strings.cpp
+           $$PWD/strings.cpp \
+           $$PWD/constants.cpp
+
 FORMS   += $$PWD/mainwindow.ui
 
 

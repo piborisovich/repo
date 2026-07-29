@@ -14,6 +14,9 @@ public:
     void handleMouseMove(Qt::MouseButtons buttons, const QPointF &scenePos) override;
 
 private:
+    void initLine(const QPointF &firstPoint);
+
+private:
     LineItem *m_previewLine;
     QPointF m_startPoint;
 };

@@ -12,15 +12,19 @@ public:
 
     ToolSettings();
 
-    qreal brushSize() const;
-    void setBrushSize(qreal newBrushSize);
+    qreal penSize() const;
+    void setPenSize(qreal newPenSize);
 
     QGraphicsView::DragMode dragMode() const;
     void setDragMode(const QGraphicsView::DragMode &newDragMode);
 
     virtual ~ToolSettings() {}
 
+    qreal brushSize() const;
+    void setBrushSize(qreal newBrushSize);
+
 private:
+    qreal m_penSize;
     qreal m_brushSize;
     QGraphicsView::DragMode m_dragMode;
 };

@@ -1,5 +1,5 @@
 /*!
- * \file strings.hpp
+ * \file strings.cpp
  *
  * \brief  Строковые константы. Определения
  */
@@ -12,7 +12,7 @@ namespace Strings
 const char *APPLICATION_NAME = "Graph Painter Builder";
 
 const char *TOOLS_TEXT = "Tools";
-const char *BRUSH_SIZE_TEXT = "<b>Brush size/border:</b>";
+const char *PEN_SIZE_TEXT = "<b>Pen size/border:</b>";
 const char *PALETTE_TEXT = "<b>Palette:</b>";
 const char *PROPERTIES_WIDGET_TITLE = "Properties";
 

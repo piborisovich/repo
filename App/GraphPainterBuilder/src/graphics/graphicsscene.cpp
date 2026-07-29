@@ -86,14 +86,15 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     //Отработка нажатия на правую кнопку мыши
     if ( event->button() == Qt::RightButton ) {
-
-        clearSelection();
-
         //Выделить самый верхний элемент под курсором
         auto item = itemAt(pos, QTransform());
 
-        if ( item ) {
+        if ( item && !item->isSelected() ) {
+            clearSelection();
             item->setSelected(true);
+        } else if ( item == nullptr ) {
+            event->accept();
+            return;
         }
     }
 
@@ -180,10 +181,14 @@ void GraphicsScene::changeCurrentTool(ITool* tool)
         m_currentTool = tool;
 
         for ( auto* view : views() ) {
-            if ( tool && tool->settings() ) {
-                auto sts = tool->settings();
-                view->setCursor(tool->getCursor());
-                view->setDragMode( sts->dragMode() );
+            if ( tool ) {
+                view->setCursor( tool->getCursor() );
+                if ( tool->settings() ) {
+                    auto sts = tool->settings();
+                    view->setDragMode( sts->dragMode() );
+                } else {
+                    view->setDragMode( QGraphicsView::NoDrag );
+                }
             } else {
                 view->setCursor( QCursor() );
                 view->setDragMode( QGraphicsView::NoDrag );

@@ -16,18 +16,18 @@ ToolSettingsWidget::ToolSettingsWidget(std::shared_ptr<ToolSettings> settings,
     QSlider *sizeSlider = new QSlider(Qt::Horizontal);
 
     sizeSlider->setRange(1, 1000);
-    sizeSlider->setValue( settings->brushSize() * 10.0 );
+    sizeSlider->setValue( settings->penSize() * 10.0 );
 
     m_layout->addRow(sizeSlider);
-    m_layout->addRow(Strings::BRUSH_SIZE_TEXT, m_sizeLabel);
+    m_layout->addRow(Strings::PEN_SIZE_TEXT, m_sizeLabel);
 
     auto result = connect(sizeSlider,
                           &QSlider::valueChanged,
                           this,
-                          &ToolSettingsWidget::on_brushSizeChanged);
+                          &ToolSettingsWidget::on_penSizeChanged);
     Q_ASSERT(result);
 
-    on_brushSizeChanged( sizeSlider->value() );
+    on_penSizeChanged( sizeSlider->value() );
 }
 
 void ToolSettingsWidget::addWidget(QWidget *widget)
@@ -40,11 +40,11 @@ void ToolSettingsWidget::addWidget(const QString &name, QWidget *widget)
     m_layout->addRow(name, widget);
 }
 
-void ToolSettingsWidget::on_brushSizeChanged(int size)
+void ToolSettingsWidget::on_penSizeChanged(int size)
 {
     qreal value = size / 10.0;
     m_sizeLabel->setText( QString::number(value, 'f', 1) );
     if ( m_settings ) {
-        m_settings->setBrushSize(value);
+        m_settings->setPenSize(value);
     }
 }

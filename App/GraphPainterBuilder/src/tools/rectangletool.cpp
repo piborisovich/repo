@@ -37,7 +37,7 @@ void RectangleTool::processDrawing(QPointF pos)
 
     if ( scn == nullptr ) return;
 
-    auto brushSize = settings()->brushSize();
+    auto brushSize = settings()->penSize();
 
     QPen pen(scn->currentColor(),
              brushSize,

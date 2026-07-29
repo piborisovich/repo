@@ -37,7 +37,7 @@ void CircleTool::processDrawing(QPointF pos)
 
     if ( scn ) {
 
-        auto brushSize = settings()->brushSize();
+        auto brushSize = settings()->penSize();
 
         QPen pen(scn->currentColor(),
                  brushSize,

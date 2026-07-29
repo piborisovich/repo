@@ -176,19 +176,16 @@ void MainWindow::on_itemDeselected()
 
 void MainWindow::on_showContextMenu(const QPoint &pos)
 {
-    auto scenePos = m_view->mapToScene(pos);
-    if ( auto item = m_view->scene()->itemAt( scenePos, QTransform() ) ) {
+    const auto selected = m_view->scene()->selectedItems();
 
-        if ( item->isSelected() ) {
-            QMenu contextMenu(this);
-            QAction *deleteAction = contextMenu.addAction(Strings::DELETE_ITEM_ACTION_TEXT);
+    if ( selected.size() ) {
+        QMenu contextMenu(this);
+        QAction *deleteAction = contextMenu.addAction(Strings::DELETE_ITEM_ACTION_TEXT);
 
-            QAction* current = contextMenu.exec( m_view->mapToGlobal(pos) );
+        QAction* current = contextMenu.exec( m_view->mapToGlobal(pos) );
 
-            if ( current == deleteAction ) {
-                auto scene = m_view->graphicsScene();
-                scene->removeItems(QList<QGraphicsItem*>() << item);
-            }
+        if ( current == deleteAction ) {
+            m_view->graphicsScene()->removeItems(selected);
         }
     }
 }

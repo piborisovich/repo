@@ -13,7 +13,7 @@ namespace Strings
 extern const char *APPLICATION_NAME;
 
 extern const char *TOOLS_TEXT;
-extern const char *BRUSH_SIZE_TEXT;
+extern const char *PEN_SIZE_TEXT;
 extern const char *PALETTE_TEXT;
 extern const char *PROPERTIES_WIDGET_TITLE;
 

@@ -43,6 +43,13 @@ public:
 
     virtual void select() = 0;
     virtual void unselect() = 0;
+
+    /*!
+     * \brief Проверка нахождения вершины на сцене с учётом толщины кисти
+     * \param scenePos
+     * \return
+     */
+    virtual bool vertexOnScene(const QPointF &scenePos) const = 0;
 };
 
 #endif // ITOOL_HPP
